@@ -1,0 +1,38 @@
+.sidebar {
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+#sidebar-wrapper{
+    min-height: 100vh !important;
+  
+    margin-left: -1rem;
+    -webkit-transition: margin .25s ease-out;
+    -moz-transition: margin .25s ease-out;
+    -o-transition: margin .25s ease-out;
+    transition: margin .25s ease-out;
+    background-color: #fff;
+}
+#sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+
+#page-content-wrapper {
+
+
+    background-color: #fff  ;
+}
+
+.nav-item{
+    text-decoration: none;
+    font-size: 18px;
+    background-color: #B57DDE;
+}
+.nav-item :hover{
+    font-size: 18px;
+    color: #fff;
+    background-color: #8f56b8;
+}
+a nav-item{
+    color: #fff;
+}
