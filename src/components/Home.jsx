@@ -5,7 +5,7 @@ const Home = () => {
     <Container>
       <Row className="mt-4 text-center">
 
-            <Col> 
+            <Col > 
             <h1>ยินดีต้นรับเข้าสู่ ระบบจัดทำหลักสูตร</h1>
             </Col>
             <Col>

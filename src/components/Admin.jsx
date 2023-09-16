@@ -4,31 +4,147 @@ import { Container, Row, Col, Card, Form, Image, Modal } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
-import Table from "react-bootstrap/Table";
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+
+import Select from 'react-select';
 
 const Admin = () => {
+
+  const options = [
+    { value: 'ทักษะศตวรรษที่ 21', label: 'ทักษะศตวรรษที่ 21' },
+    { value: 'นโยบายการศึกษาระดับประเทศ', label: 'นโยบายการศึกษาระดับประเทศ' },
+    { value: 'นโยบายมหาวิทยาลัย', label: 'นโยบายมหาวิทยาลัย' },
+    { value: 'แนวโน้มความเสี่ยงภายนอก', label: 'แนวโน้มความเสี่ยงภายนอก' }
+  ];
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [courses, setCourses] = useState([]);
-  const [coursesType, setcoursesType] = useState([]);
+
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
 
+  const [selectedValue, setSelectedValue] = useState("");
+  const [counter, setCounter] = useState(0);
+
+  const [topicsData, setTopicData] = useState([]);
+  const [topicName,setTopicName] = useState("");
+
+
+  const onSelectTopic = (event) => {
+    setSelectedValue(event.value);
+  }
+
   const onSelectForm = (name) => {
+    if(name==="บันทึกส่วนประกอบของหลักสูตร"){
+      setTopicData([]);
+    }
     setFormName(name);
-    handleShow();
+   
+
   };
 
-  const getData = async () => {
-    await axios.get("http://localhost:3000/").then((res) => {
-      console.log(res);
-    });
+  const addTopicData = () => {
+    setTopicData([...topicsData, {
+      title: selectedValue || topicName,
+      anwsers: [
+        { list: "" },
+        { list: "" },
+        { list: "" }
+
+      ]
+
+    }])
+  }
+
+  const addPOLdata = (title) => {
+
+    setTopicData([{
+      title: title,
+      anwsers: [
+        { list: "" },
+        { list: "" },
+        { list: "" },
+        { list: "" },
+        { list: "" },
+        { list: "" }
+
+      ]
+
+    }])
+    
+    
+  }
+
+
+
+  const addAwnser = (index) => {
+
+    console.log(topicsData[index].anwsers)
+    topicsData[index].anwsers.push({ list: '' })
+    setCounter(counter + 1)
+  }
+
+  const updateAwnser = (index, anser, value) => {
+    topicsData[index].anwsers[anser].list = value;
+    console.log(topicsData[index].anwsers);
+    setCounter(counter + 1)
+  }
+
+  const postData = () => {
+
+    //post toppics 
+    topicsData.map((item) => {
+        
+      let body = { name: item.title, groupName: formName };
+      axios.post("http://localhost:3000/education/add", body).then((respone) => {
+
+        let id = respone.data.id;
+        //detail
+        item.anwsers.map((data) => {
+          let body = { answer: data.list, educationId: id };
+          axios.post("http://localhost:3000/education/detail", body)
+        })
+
+      })
+
+    })
+
+    setTopicData([]);
+
   };
+
+  const postDataPol = () => {
+
+    //post toppics 
+    topicsData.map((item) => {
+
+      let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
+      axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
+
+        let id = respone.data.id;
+        //detail
+        item.anwsers.map((data) => {
+          let body = { programId: id, anwser: data.list };
+          axios.post("http://localhost:3000/education/addDetail", body)
+        })
+
+      })
+
+    })
+    setTopicData([]);
+    alert('บันทึกข้อมูล POLs สำเร็จ')
+    
+
+  };
+
 
   useEffect(() => {
-    getData();
-  }, []);
+    // getData();
+  }, [topicsData]);
+
+  useEffect(() => {
+
+  }, [counter])
   return (
     <>
       <Container fluid>
@@ -37,14 +153,14 @@ const Admin = () => {
             <Nav className="d-md-block  sidebar">
               <div className="text-center mb-4">
                 {" "}
-                <span>ADMIN : NKC </span>
+                <span>ADMIN : {localStorage.getItem("name")} </span>
               </div>
               <Nav.Item>
                 <Nav.Link
                   onClick={() => onSelectForm("บันทึกความสอดคล้องกับนโยบาย")}
                   style={{ color: "#fff" }}
                 >
-                  บันทึกความสอดคล้องกับนโยบาย
+                  ความสอดคล้องกับนโยบาย
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
@@ -52,7 +168,7 @@ const Admin = () => {
                   onClick={() => onSelectForm("บันทึกความสอดคล้องกับนทฤษฏี")}
                   style={{ color: "#fff" }}
                 >
-                  บันทึกความสอดคล้องกับนทฤษฏี{" "}
+                  ความสอดคล้องกับนทฤษฏี{" "}
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
@@ -62,7 +178,7 @@ const Admin = () => {
                   }
                   style={{ color: "#fff" }}
                 >
-                  บันทึกความสอดคล้องกับการประเมิน
+                  ความสอดคล้องกับการประเมิน
                 </Nav.Link>
               </Nav.Item>
 
@@ -73,7 +189,7 @@ const Admin = () => {
                   }
                   style={{ color: "#fff" }}
                 >
-                  บันทึกความสอดคล้องกับความต้องการ
+                  ความสอดคล้องกับความต้องการ
                 </Nav.Link>
               </Nav.Item>
 
@@ -82,52 +198,225 @@ const Admin = () => {
                   onClick={() => onSelectForm("บันทึกส่วนประกอบของหลักสูตร")}
                   style={{ color: "#fff" }}
                 >
-                  บันทึกส่วนประกอบของหลักสูตร
+                  ส่วนประกอบของหลักสูตร
                 </Nav.Link>
               </Nav.Item>
             </Nav>
           </Col>
-
+                  
           <Col sm={9} id="page-content-wrapper ">
+
+
+
             <Card className="mt-4">
               <Card.Body>
-                <Card.Title className="text-center">
-                  ตารางแสดงข้อมูลจัดทำหลักสูตร
+                <Card.Title className="text-center mt-4 mb-4">
+                  {formName}
                 </Card.Title>
-                <Table striped bordered hover className="mt-4">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>ชื่อสารสนเทศ</th>
-                      <th>กลุ่มสารสนเทศ</th>
-                      <th>ประเภทสารสนเทศ</th>
-                      <th>ไฟล์</th>
-                      <th>รายละเอียด</th>
-                      <th>คีย์เวิร์ด</th>
-                      <th>จัดการ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {courses.map((data) => {
-                      return (
-                        <tr key={data.informationId}>
-                          <td>{data.informationId}</td>
-                          <td>{data.informationName}</td>
-                          <td>{data.InformationTypeId}</td>
-                          <td>{data.subname}</td>
-                          <td>{data.sources}</td>
-                          <td> {data.detail}</td>
-                          <td>{data.keyword}</td>
-                          <td>
-                            <Button variant="warning">แก้ไข</Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
+
+                {
+                  formName === "บันทึกส่วนประกอบของหลักสูตร" && (
+                    <Form>
+                      <ButtonGroup aria-label="Basic example">
+                        <Button onClick={() => addPOLdata('POLs')} variant="secondary">POLs</Button>
+                        <Button onClick={() => addPOLdata('COLs')} variant="secondary" >COLs</Button>
+                        <Button onClick={() => addPOLdata('YOLs')} variant="secondary">YOLs</Button>
+                      </ButtonGroup>
+                    
+                      {
+                          topicsData.map((data, indexp) => {
+                            return (
+                              <Row className="mb-3 mt-3">
+                                <Col>
+                                  <Card>
+                                    <Card.Body>
+                                      <Row>
+                                        <Col sm={10}>
+                                          <Card.Title>{data.title}</Card.Title>
+                                          <Button variant="light" onClick={() => addAwnser(indexp)}>+ เพิ่มฟิลด์ข้อมูล</Button>
+                                        </Col>
+                                        <Col sm={2} >
+                                          <Button variant="danger" style={{ float: 'right' }} className="text-right">X</Button>
+                                        </Col>
+                                      </Row>
+
+                                      <div className="anwser mt-3">
+                                        <Row>
+                                          {
+                                            data.anwsers.map((item, index) => {
+
+                                              return (
+                                                <Col sm={4} className="d-flex">
+                                                  {/* <span>{index}</span> */}
+                                                  <Form.Control type="text"
+                                                    placeholder="กรกอกข้อมูล"
+                                                    className="mt-2"
+                                                    defaultValue={item.list}
+                                                    onChange={(e) => updateAwnser(indexp, index, e.target.value)}
+                                                  /> 
+                                                </Col>
+                                              )
+                                            })
+                                          }
+
+
+                                        </Row>
+
+                                      </div>
+
+                                    </Card.Body>
+
+                                  </Card>
+                                </Col>
+                              </Row>
+
+                            )
+
+                          })
+                        }
+
+
+                      <Row className="mt-4">
+                        <Col>
+                          <Button
+                            variant="success"
+                            onClick={() => postDataPol()}>
+                            บันทึกข้อมูล
+                          </Button>
+                        </Col>
+                        <Col>
+                          <Button
+                            variant="danger"
+                            onClick={() => postData()}>
+                            ยกเลิก
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  )}
+
+
+                {
+                  formName !== "บันทึกส่วนประกอบของหลักสูตร" && (
+
+
+                    <Form>
+                      <Row>
+                        <Col sm={4}>
+                          <Form.Group>
+                            <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล </Form.Label>
+                            <Select
+                              onChange={onSelectTopic}
+                              options={options}
+                              defaultValue={options[0]}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={4}>
+                          <Form.Group>
+                            <Form.Label>กำหนดเอง </Form.Label>
+                            <Form.Control type="text" placeholder="อื่นๆ"  onChange={(e)=>setTopicName(e.target.value)}  value={topicName} />
+                          </Form.Group>
+                          <br />
+                        </Col>
+                        <Col>
+                          <Form.Group style={{ marginTop: '29px' }}>
+
+                            <Button
+                              onClick={() => addTopicData()}
+                            >
+
+                              เพิ่มข้อมูล
+                            </Button>
+                          </Form.Group>
+                        </Col>
+                      </Row>
+
+
+
+                      <div className="topic">
+
+
+                        {
+                          topicsData.map((data, indexp) => {
+                            return (
+                              <Row className="mb-3 ">
+                                <Col>
+                                  <Card>
+                                    <Card.Body>
+                                      <Row>
+                                        <Col sm={10}>
+                                          <Card.Title>{data.title}</Card.Title>
+                                          <Button variant="light" onClick={() => addAwnser(indexp)}>+ เพิ่มฟิลด์คำตอบ</Button>
+                                        </Col>
+                                        <Col sm={2} >
+                                          <Button variant="danger" style={{ float: 'right' }} className="text-right">X</Button>
+                                        </Col>
+                                      </Row>
+
+                                      <div className="anwser mt-3">
+                                        <Row>
+                                          {
+                                            data.anwsers.map((item, index) => {
+
+                                              return (
+                                                <Col sm={4} className="d-flex">
+                                                  {/* <span>{index}</span> */}
+                                                  <Form.Control type="text"
+                                                    placeholder="กรกอกข้อมูล"
+                                                    className="mt-2"
+                                                    defaultValue={item.list}
+                                                    onChange={(e) => updateAwnser(indexp, index, e.target.value)}
+                                                  /> 
+                                                </Col>
+                                              )
+                                            })
+                                          }
+
+
+                                        </Row>
+
+                                      </div>
+
+                                    </Card.Body>
+
+                                  </Card>
+                                </Col>
+                              </Row>
+
+                            )
+
+                          })
+                        }
+
+
+                      </div>
+                      <Row>
+                        <Col>
+                          <Button
+                            variant="success"
+                            onClick={() => postData()}>
+                            บันทึกข้อมูล
+                          </Button>
+                        </Col>
+                        <Col>
+                          <Button
+                            variant="danger"
+                            onClick={() => postData()}>
+                            ยกเลิก
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  )
+                }
+
               </Card.Body>
             </Card>
+
+
+
+
           </Col>
         </Row>
       </Container>
@@ -143,15 +432,7 @@ const Admin = () => {
               <Col sm={6}>
                 <Form.Group>
                   <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล </Form.Label>
-                  <Form.Select>
-                    {coursesType.map((data) => {
-                      return (
-                        <option value={data.InformationTypeId}>
-                          {data.typeName}
-                        </option>
-                      );
-                    })}
-                  </Form.Select>
+                  <Select options={options} />
                 </Form.Group>
               </Col>
               <Col>

@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarMenu from './components/NavbarMenu';
 import Container from 'react-bootstrap/esm/Container';
-function App() {
-
+const  App =()=> {
 
   return (
     <>
-    <Container fluid  >
+    <Container fluid >
+
            <NavbarMenu />
+           
     </Container>
     </>
   )
