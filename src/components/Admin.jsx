@@ -16,30 +16,34 @@ const Admin = () => {
     { value: 'นโยบายมหาวิทยาลัย', label: 'นโยบายมหาวิทยาลัย' },
     { value: 'แนวโน้มความเสี่ยงภายนอก', label: 'แนวโน้มความเสี่ยงภายนอก' }
   ];
+
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
-
   const [selectedValue, setSelectedValue] = useState("");
   const [counter, setCounter] = useState(0);
-
   const [topicsData, setTopicData] = useState([]);
-  const [topicName,setTopicName] = useState("");
+  const [topicName, setTopicName] = useState("");
 
+  const [lerningName, setLerningName] = useState("");
+
+  const [plos, setPlos] = useState([]);
+  const [clos, setClos] = useState([]);
 
   const onSelectTopic = (event) => {
+
     setSelectedValue(event.value);
   }
 
   const onSelectForm = (name) => {
-    if(name==="บันทึกส่วนประกอบของหลักสูตร"){
+    if (name === "บันทึกส่วนประกอบของหลักสูตร") {
       setTopicData([]);
     }
     setFormName(name);
-   
+
 
   };
 
@@ -50,29 +54,26 @@ const Admin = () => {
         { list: "" },
         { list: "" },
         { list: "" }
-
       ]
-
     }])
   }
 
   const addPOLdata = (title) => {
 
+    setLerningName(title);
     setTopicData([{
       title: title,
       anwsers: [
         { list: "" },
         { list: "" },
         { list: "" },
-        { list: "" },
-        { list: "" },
-        { list: "" }
+      
 
       ]
 
     }])
-    
-    
+
+
   }
 
 
@@ -90,11 +91,12 @@ const Admin = () => {
     setCounter(counter + 1)
   }
 
+  // บันทึกความสอดคล้อง
   const postData = () => {
 
     //post toppics 
     topicsData.map((item) => {
-        
+
       let body = { name: item.title, groupName: formName };
       axios.post("http://localhost:3000/education/add", body).then((respone) => {
 
@@ -113,33 +115,112 @@ const Admin = () => {
 
   };
 
-  const postDataPol = () => {
+  const postDataPlo = () => {
 
-    //post toppics 
-    topicsData.map((item) => {
+    if (lerningName === "PLOs") {
 
-      let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-      axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
 
-        let id = respone.data.id;
-        //detail
-        item.anwsers.map((data) => {
-          let body = { programId: id, anwser: data.list };
-          axios.post("http://localhost:3000/education/addDetail", body)
+      //post toppics 
+      topicsData.map((item) => {
+
+        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
+        axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
+
+          let id = respone.data.id;
+          //detail PLOs
+          item.anwsers.map((data) => {
+            let body = { programId: id, anwser: data.list };
+            axios.post("http://localhost:3000/education/addDetail", body)
+          })
+
         })
 
       })
+      setTopicData([]);
+      alert('บันทึกข้อมูล PLOs สำเร็จ')
+    }
 
-    })
-    setTopicData([]);
-    alert('บันทึกข้อมูล POLs สำเร็จ')
-    
+  else if (lerningName === "CLOs") {
+
+      //post toppics 
+      topicsData.map((item) => {
+
+        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
+        axios.post("http://localhost:3000/education/saveCLO", body).then((respone) => {
+
+          let id = respone.data.id;
+          //detail CLOs
+          item.anwsers.map((data) => {
+            let body = { courselearningId: id, answer: data.list };
+            axios.post("http://localhost:3000/education/cloDetail", body)
+          })
+
+        })
+
+      })
+      setTopicData([]);
+      alert('บันทึกข้อมูล CLOs สำเร็จ')
+    }
+
+  else if (lerningName === "YLOs") {
+
+      //post toppics 
+      topicsData.map((item) => {
+
+        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
+        axios.post("http://localhost:3000/education/saveYLO", body).then((respone) => {
+
+          let id = respone.data.id;
+          //detail YLOs
+          item.anwsers.map((data) => {
+            let body = { learningyearId: id, answer: data.list };
+            axios.post("http://localhost:3000/education/yloDetail", body)
+          })
+
+        })
+
+      })
+      
+      alert('บันทึกข้อมูล YLOs สำเร็จ')
+    }
+
 
   };
 
 
+  const getPLOs = async () => {
+    let plos = [];
+    await axios.get("http://localhost:3000/education/PLO")
+      .then(res => {
+        console.log(res.data)
+        plos = res.data.map(item => {
+          return ({ label: item.PLO, value: item.PLO })
+        })
+      })
+    setPlos(plos);
+  }
+
+  const getCLOs = async () => {
+    let clos = [];
+    await axios.get("http://localhost:3000/education/CLO")
+      .then(res => {
+        console.log(res.data)
+        clos = res.data.map(item => {
+          return ({ label: item.CLO, value: item.CLO })
+        })
+      })
+
+    setClos(clos);
+
+  }
+
   useEffect(() => {
-    // getData();
+    getPLOs();
+    getCLOs();
+  }, [])
+
+  useEffect(() => {
+
   }, [topicsData]);
 
   useEffect(() => {
@@ -153,14 +234,14 @@ const Admin = () => {
             <Nav className="d-md-block  sidebar">
               <div className="text-center mb-4">
                 {" "}
-                <span>ADMIN : {localStorage.getItem("name")} </span>
+                <span>ผู้ใช้ : {localStorage.getItem("name")} </span>
               </div>
               <Nav.Item>
                 <Nav.Link
                   onClick={() => onSelectForm("บันทึกความสอดคล้องกับนโยบาย")}
                   style={{ color: "#fff" }}
                 >
-                  ความสอดคล้องกับนโยบาย
+                  บันทึกความสอดคล้องกับนโยบาย
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
@@ -168,7 +249,7 @@ const Admin = () => {
                   onClick={() => onSelectForm("บันทึกความสอดคล้องกับนทฤษฏี")}
                   style={{ color: "#fff" }}
                 >
-                  ความสอดคล้องกับนทฤษฏี{" "}
+                  บันทึกความสอดคล้องกับนทฤษฏี{" "}
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
@@ -178,7 +259,7 @@ const Admin = () => {
                   }
                   style={{ color: "#fff" }}
                 >
-                  ความสอดคล้องกับการประเมิน
+                  บันทึกความสอดคล้องกับการประเมิน
                 </Nav.Link>
               </Nav.Item>
 
@@ -189,7 +270,7 @@ const Admin = () => {
                   }
                   style={{ color: "#fff" }}
                 >
-                  ความสอดคล้องกับความต้องการ
+                  บันทึกความสอดคล้องกับความต้องการ
                 </Nav.Link>
               </Nav.Item>
 
@@ -198,12 +279,12 @@ const Admin = () => {
                   onClick={() => onSelectForm("บันทึกส่วนประกอบของหลักสูตร")}
                   style={{ color: "#fff" }}
                 >
-                  ส่วนประกอบของหลักสูตร
+                  บันทึกส่วนประกอบของหลักสูตร
                 </Nav.Link>
               </Nav.Item>
             </Nav>
           </Col>
-                  
+
           <Col sm={9} id="page-content-wrapper ">
 
 
@@ -218,76 +299,95 @@ const Admin = () => {
                   formName === "บันทึกส่วนประกอบของหลักสูตร" && (
                     <Form>
                       <ButtonGroup aria-label="Basic example">
-                        <Button onClick={() => addPOLdata('POLs')} variant="secondary">POLs</Button>
-                        <Button onClick={() => addPOLdata('COLs')} variant="secondary" >COLs</Button>
-                        <Button onClick={() => addPOLdata('YOLs')} variant="secondary">YOLs</Button>
+                        <Button onClick={() => addPOLdata('PLOs')} variant="secondary">PLOs</Button>
+                        <Button onClick={() => addPOLdata('CLOs')} variant="secondary" >CLOs</Button>
+                        <Button onClick={() => addPOLdata('YLOs')} variant="secondary">YLOs</Button>
                       </ButtonGroup>
-                    
+
                       {
-                          topicsData.map((data, indexp) => {
-                            return (
-                              <Row className="mb-3 mt-3">
-                                <Col>
-                                  <Card>
-                                    <Card.Body>
+                        topicsData.map((data, indexp) => {
+                          return (
+                            <Row className="mb-3 mt-3" key={indexp}>
+                              <Col>
+                                <Card>
+                                  <Card.Body>
+                                    <Row>
+                                      <Col sm={4}>
+
+                                        <Card.Title>{data.title}</Card.Title>
+                                        {
+                                          data.title === "CLOs" && (
+                                            <Form.Group>
+                                              <Form.Label>เลือก PLOs</Form.Label>
+                                              <Select options={plos} />
+                                            </Form.Group>
+                                          )
+                                        }
+                                        {
+                                          data.title === "YLOs" && (
+                                            <Form.Group>
+                                              <Form.Label>เลือก CLOs</Form.Label>
+                                              <Select options={clos} />
+                                            </Form.Group>
+                                          )
+                                        }
+
+                                        <Button variant="light mt-4" onClick={() => addAwnser(indexp)}> + เพิ่มฟิลด์ข้อมูล</Button>
+
+                                      </Col>
+
+                                      <Col sm={8} >
+                                        <Button variant="danger" style={{ float: 'right' }} className="text-right">X</Button>
+                                      </Col>
+                                    </Row>
+
+                                    <div className="anwser mt-3">
                                       <Row>
-                                        <Col sm={10}>
-                                          <Card.Title>{data.title}</Card.Title>
-                                          <Button variant="light" onClick={() => addAwnser(indexp)}>+ เพิ่มฟิลด์ข้อมูล</Button>
-                                        </Col>
-                                        <Col sm={2} >
-                                          <Button variant="danger" style={{ float: 'right' }} className="text-right">X</Button>
-                                        </Col>
+                                        {
+                                          data.anwsers.map((item, index) => {
+
+                                            return (
+                                              <Col sm={4} className="d-flex">
+                                                <Form.Control type="text"
+                                                  placeholder={`กรกอกข้อมูล ${data.title}`}
+                                                  className="mt-2"
+                                                  defaultValue={item.list}
+                                                  onChange={(e) => updateAwnser(indexp, index, e.target.value)}
+                                                />
+                                              </Col>
+                                            )
+                                          })
+                                        }
+
+
                                       </Row>
 
-                                      <div className="anwser mt-3">
-                                        <Row>
-                                          {
-                                            data.anwsers.map((item, index) => {
+                                    </div>
 
-                                              return (
-                                                <Col sm={4} className="d-flex">
-                                                  {/* <span>{index}</span> */}
-                                                  <Form.Control type="text"
-                                                    placeholder="กรกอกข้อมูล"
-                                                    className="mt-2"
-                                                    defaultValue={item.list}
-                                                    onChange={(e) => updateAwnser(indexp, index, e.target.value)}
-                                                  /> 
-                                                </Col>
-                                              )
-                                            })
-                                          }
+                                  </Card.Body>
 
+                                </Card>
+                              </Col>
+                            </Row>
 
-                                        </Row>
+                          )
 
-                                      </div>
-
-                                    </Card.Body>
-
-                                  </Card>
-                                </Col>
-                              </Row>
-
-                            )
-
-                          })
-                        }
+                        })
+                      }
 
 
                       <Row className="mt-4">
                         <Col>
                           <Button
-                            variant="success"
-                            onClick={() => postDataPol()}>
-                            บันทึกข้อมูล
+                            variant="success w-50"
+                            onClick={() => postDataPlo()}>
+                            บันทึกข้อมูล { lerningName}
                           </Button>
                         </Col>
                         <Col>
                           <Button
-                            variant="danger"
-                            onClick={() => postData()}>
+                            variant="danger w-50"
+                          >
                             ยกเลิก
                           </Button>
                         </Col>
@@ -315,7 +415,9 @@ const Admin = () => {
                         <Col sm={4}>
                           <Form.Group>
                             <Form.Label>กำหนดเอง </Form.Label>
-                            <Form.Control type="text" placeholder="อื่นๆ"  onChange={(e)=>setTopicName(e.target.value)}  value={topicName} />
+                            <Form.Control type="text" placeholder="อื่นๆ"
+                              onChange={(e) => setTopicName(e.target.value)}
+                              value={topicName} />
                           </Form.Group>
                           <br />
                         </Col>
@@ -361,13 +463,13 @@ const Admin = () => {
 
                                               return (
                                                 <Col sm={4} className="d-flex">
-                                                  {/* <span>{index}</span> */}
+
                                                   <Form.Control type="text"
                                                     placeholder="กรกอกข้อมูล"
                                                     className="mt-2"
                                                     defaultValue={item.list}
                                                     onChange={(e) => updateAwnser(indexp, index, e.target.value)}
-                                                  /> 
+                                                  />
                                                 </Col>
                                               )
                                             })
@@ -402,7 +504,7 @@ const Admin = () => {
                         <Col>
                           <Button
                             variant="danger"
-                            onClick={() => postData()}>
+                          >
                             ยกเลิก
                           </Button>
                         </Col>

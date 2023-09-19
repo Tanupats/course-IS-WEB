@@ -31,14 +31,12 @@ const Login = () => {
           
           if( res.data.role==="admin"){
               navigae('/admin');
-          }else{
-            alert('ไม่สามารถเข้าสู่ระบบได้ เนื่องจากไม่ใช่อาจารย์ หรือ ผู้ดูแลระบบ')
           }
          
         }
       })
       .catch(({ response }) => {
-        console.log(response.data.error);
+        alert(response.data.error);
       });
   };
 

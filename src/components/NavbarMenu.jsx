@@ -8,6 +8,7 @@ import Admin from "./Admin";
 import Login from "./Login";
 import ReportPLO from "./ReportPLO";
 import ReportAll from "./ReportAll";
+import MindMapping from "./MindMapping";
 
 const NavbarMenu = () => {
 
@@ -40,7 +41,7 @@ const NavbarMenu = () => {
                 <Nav.Link as={Link} to={"/all"} style={{ color: '#fff' }}>
                   สรุปความสอดคล้อง 
                 </Nav.Link>
-                <Nav.Link as={Link} to={"/PLOMindmap"} style={{ color: '#fff' }}>
+                <Nav.Link as={Link} to={"/Mindmap"} style={{ color: '#fff' }}>
                   แผนผังความคิด PLOs
 
                 </Nav.Link>
@@ -75,6 +76,7 @@ const NavbarMenu = () => {
           <Route path="/admin" Component={Admin}></Route>
           <Route path="/login" Component={Login}></Route>
           <Route path="/reportPLO" Component={ReportPLO}></Route>
+          <Route path="/Mindmap" Component={MindMapping}></Route>
         </Routes>
       </Router>
     </div>
