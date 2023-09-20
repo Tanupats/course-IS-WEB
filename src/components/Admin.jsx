@@ -5,7 +5,7 @@ import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-
+import Swal from 'sweetalert2'
 import Select from 'react-select';
 
 const Admin = () => {
@@ -16,6 +16,8 @@ const Admin = () => {
     { value: 'นโยบายมหาวิทยาลัย', label: 'นโยบายมหาวิทยาลัย' },
     { value: 'แนวโน้มความเสี่ยงภายนอก', label: 'แนวโน้มความเสี่ยงภายนอก' }
   ];
+
+
 
   const [show, setShow] = useState(false);
 
@@ -31,11 +33,15 @@ const Admin = () => {
   const [lerningName, setLerningName] = useState("");
 
   const [plos, setPlos] = useState([]);
-  const [clos, setClos] = useState([]);
+  const [ylos, setYlos] = useState([]);
+  const [yloValue,setYloValue] = useState(null);
+  const [ploValue,setPloValue] = useState(null);
+
 
   const onSelectTopic = (event) => {
 
     setSelectedValue(event.value);
+    setTopicName(event.value);
   }
 
   const onSelectForm = (name) => {
@@ -49,7 +55,7 @@ const Admin = () => {
 
   const addTopicData = () => {
     setTopicData([...topicsData, {
-      title: selectedValue || topicName,
+      title: topicName,
       anwsers: [
         { list: "" },
         { list: "" },
@@ -110,7 +116,13 @@ const Admin = () => {
       })
 
     })
-
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'บันทึกข้อมูลสำเร็จ',
+      showConfirmButton: true,
+      timer: 1500
+    })
     setTopicData([]);
 
   };
@@ -135,9 +147,15 @@ const Admin = () => {
 
         })
 
+      })  
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'บันทึกข้อมูล PLOs สำเร็จ',
+        showConfirmButton: true,
+        timer: 1500
       })
-      setTopicData([]);
-      alert('บันทึกข้อมูล PLOs สำเร็จ')
+       setTopicData([]);
     }
 
   else if (lerningName === "CLOs") {
@@ -151,15 +169,23 @@ const Admin = () => {
           let id = respone.data.id;
           //detail CLOs
           item.anwsers.map((data) => {
-            let body = { courselearningId: id, answer: data.list };
+            let body = { courselearningId: id, answer: data.list,yloId:yloValue };
             axios.post("http://localhost:3000/education/cloDetail", body)
           })
 
         })
 
       })
+
+
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'บันทึกข้อมูล CLOs สำเร็จ',
+        showConfirmButton: true,
+        timer: 1500
+      })
       setTopicData([]);
-      alert('บันทึกข้อมูล CLOs สำเร็จ')
     }
 
   else if (lerningName === "YLOs") {
@@ -173,7 +199,7 @@ const Admin = () => {
           let id = respone.data.id;
           //detail YLOs
           item.anwsers.map((data) => {
-            let body = { learningyearId: id, answer: data.list };
+            let body = { learningyearId: id, answer: data.list,ploId:ploValue };
             axios.post("http://localhost:3000/education/yloDetail", body)
           })
 
@@ -181,7 +207,15 @@ const Admin = () => {
 
       })
       
-      alert('บันทึกข้อมูล YLOs สำเร็จ')
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'บันทึกข้อมูล YLOs สำเร็จ',
+        showConfirmButton: true,
+        timer: 1500
+      })
+     
+      setTopicData([]);
     }
 
 
@@ -194,29 +228,29 @@ const Admin = () => {
       .then(res => {
         console.log(res.data)
         plos = res.data.map(item => {
-          return ({ label: item.PLO, value: item.PLO })
+          return ({ label: item.PLO, value: item.programdetailId })
         })
       })
     setPlos(plos);
   }
 
-  const getCLOs = async () => {
+  const getYLOs = async () => {
     let clos = [];
-    await axios.get("http://localhost:3000/education/CLO")
+    await axios.get("http://localhost:3000/education/YLO")
       .then(res => {
         console.log(res.data)
         clos = res.data.map(item => {
-          return ({ label: item.CLO, value: item.CLO })
+          return ({ label: item.YLO, value: item.id })
         })
       })
 
-    setClos(clos);
+    setYlos(clos);
 
   }
 
   useEffect(() => {
     getPLOs();
-    getCLOs();
+    getYLOs();
   }, [])
 
   useEffect(() => {
@@ -292,7 +326,7 @@ const Admin = () => {
             <Card className="mt-4">
               <Card.Body>
                 <Card.Title className="text-center mt-4 mb-4">
-                  {formName}
+                    {formName}
                 </Card.Title>
 
                 {
@@ -314,20 +348,20 @@ const Admin = () => {
                                     <Row>
                                       <Col sm={4}>
 
-                                        <Card.Title>{data.title}</Card.Title>
+                                        <Card.Title> เขียน {data.title}</Card.Title>
                                         {
                                           data.title === "CLOs" && (
                                             <Form.Group>
-                                              <Form.Label>เลือก PLOs</Form.Label>
-                                              <Select options={plos} />
+                                              <Form.Label>เลือก YLOs {yloValue}</Form.Label>
+                                              <Select options={ylos}  onChange={(e)=>setYloValue(e.value)} />
                                             </Form.Group>
                                           )
                                         }
                                         {
                                           data.title === "YLOs" && (
                                             <Form.Group>
-                                              <Form.Label>เลือก CLOs</Form.Label>
-                                              <Select options={clos} />
+                                              <Form.Label>เลือก PLOs {ploValue}</Form.Label>
+                                              <Select options={plos}  onChange={(e)=>setPloValue(e.value)}/>
                                             </Form.Group>
                                           )
                                         }

@@ -1,12 +1,18 @@
 import React from "react";
-const MindMapping  = ()=>{
+
+const MindMapping = () => {
 
 
-    return (
-        <>
-        <h1>Mind Mapping</h1>
-        </>
-    )
+        return (
+            <>
+
+             <h1 className="text-center mt-4">MindMap</h1>
+            
+
+            </>
+        );
+    
+
 }
 
 export default MindMapping;

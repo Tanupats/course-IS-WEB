@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Container, Image } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -12,7 +12,11 @@ import MindMapping from "./MindMapping";
 
 const NavbarMenu = () => {
 
-  
+ 
+
+  const Logout =()=>{
+      localStorage.removeItem("name")
+  }
   return (
     <div>
       <Router>
@@ -36,7 +40,7 @@ const NavbarMenu = () => {
                   หน้าหลัก
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/reportPLO"} style={{ color: '#fff' }}>
-                  สรุปความสอดคล้อง PLOs
+                  สรุป PLOs
                 </Nav.Link>
                 <Nav.Link as={Link} to={"/all"} style={{ color: '#fff' }}>
                   สรุปความสอดคล้อง 
@@ -47,21 +51,24 @@ const NavbarMenu = () => {
                 </Nav.Link>
               </Nav>
               <Nav>
-                
-                  <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
+              
+                        <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
                     จัดการข้อมูลหลักสูตร 
                   </Nav.Link>
+                
+                  
                 
                   <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
                   เข้าสู่ระบบ
                   </Nav.Link>
-                
+               
 
                   <Nav.Link
                   as={Link} to={"/login"}
                     style={{ color: '#fff' }}
-                    
+                    onClick={()=>Logout()}
                   >
+                  
                     ออกจากระบบ
                   </Nav.Link>
                 
