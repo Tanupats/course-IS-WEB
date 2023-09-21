@@ -7,12 +7,12 @@ const ReportPLO = () => {
   const [dataP, setDataP] = useState([])
   const getData = async () => {
 
-    await axios.get("http://localhost:3000/education/CLO_YLO")
+    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/CLO_YLO")
       .then(res => {
         setData(res.data)
         console.log(res.data)
       })
-    await axios.get("http://localhost:3000/education/YLO_PLO")
+    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/YLO_PLO")
       .then(res => {
         setDataP(res.data)
         console.log(res.data)

@@ -12,71 +12,70 @@ import MindMapping from "./MindMapping";
 
 const NavbarMenu = () => {
 
- 
 
-  const Logout =()=>{
-      localStorage.removeItem("name")
+  const Logout = () => {
+    localStorage.removeItem("name")
   }
   return (
     <div>
       <Router>
-      
+
         <Navbar collapseOnSelect expand="lg" style={{ backgroundColor: '#B57DDE' }}
         >
-            <Container fluid>
-            <Navbar.Brand>
-              {" "}
-              <Image
-                src="./src/assets/logo.jpg"
-                style={{ width: "60px", height: "60px", objectFit: "cover" }}
-              />{" "}
-            </Navbar.Brand>
 
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="me-auto">
-                <Nav.Link style={{ color: '#fff' }}>ระบบจัดทำหลักสูตร</Nav.Link>
-                <Nav.Link as={Link} to={"/"} style={{ color: '#fff' }}>
-                  หน้าหลัก
-                </Nav.Link>
-                <Nav.Link as={Link} to={"/reportPLO"} style={{ color: '#fff' }}>
-                  สรุป PLOs
-                </Nav.Link>
-                <Nav.Link as={Link} to={"/all"} style={{ color: '#fff' }}>
-                  สรุปความสอดคล้อง 
-                </Nav.Link>
-                <Nav.Link as={Link} to={"/Mindmap"} style={{ color: '#fff' }}>
-                  แผนผังความคิด PLOs
+          <Navbar.Brand>
+            {" "}
+            <Image
+              src="./src/assets/logo.jpg"
+              style={{ width: "50px", height: "50px", borderRadius: '50%', marginLeft: '12px', objectFit: "cover" }}
+            />{" "}
+          </Navbar.Brand>
 
-                </Nav.Link>
-              </Nav>
-              <Nav>
-              
-                        <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
-                    จัดการข้อมูลหลักสูตร 
-                  </Nav.Link>
-                
-                  
-                
-                  <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
-                  เข้าสู่ระบบ
-                  </Nav.Link>
-               
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav" style={{ backgroundColor: '#B57DDE' }}>
+            <Nav className="me-auto p-2">
+              <Nav.Link style={{ color: '#fff' }}>ระบบจัดทำหลักสูตร</Nav.Link>
+              <Nav.Link as={Link} to={"/"} style={{ color: '#fff' }}>
+                หน้าหลัก
+              </Nav.Link>
+              <Nav.Link as={Link} to={"/reportPLO"} style={{ color: '#fff' }}>
+                สรุป PLOs
+              </Nav.Link>
+              <Nav.Link as={Link} to={"/all"} style={{ color: '#fff' }}>
+                สรุปความสอดคล้อง
+              </Nav.Link>
+              <Nav.Link as={Link} to={"/Mindmap"} style={{ color: '#fff' }}>
+                แผนผังความคิด PLOs
 
-                  <Nav.Link
-                  as={Link} to={"/login"}
-                    style={{ color: '#fff' }}
-                    onClick={()=>Logout()}
-                  >
-                  
-                    ออกจากระบบ
-                  </Nav.Link>
-                
-              </Nav>
-            </Navbar.Collapse>
-     </Container>
+              </Nav.Link>
+            </Nav>
+            <Nav className="p-2">
+
+              <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
+                จัดการข้อมูลหลักสูตร
+              </Nav.Link>
+
+
+              <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
+                เข้าสู่ระบบ
+              </Nav.Link>
+
+
+              <Nav.Link
+                as={Link} to={"/login"}
+                style={{ color: '#fff' }}
+                onClick={() => Logout()}
+              >
+
+                ออกจากระบบ
+              </Nav.Link>
+
+            </Nav>
+          </Navbar.Collapse>
+
+
         </Navbar>
-      
+
         <Routes>
           <Route path="/" Component={Home}></Route>
           <Route path="/all" Component={ReportAll}></Route>

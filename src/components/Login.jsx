@@ -10,6 +10,7 @@ import {
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from 'sweetalert2'
 const Login = () => {
 
   const navigae = useNavigate();
@@ -23,10 +24,17 @@ const Login = () => {
       password: password,
     };
     await axios
-      .post("http://localhost:3000/users/login", body)
+      .post("https://mysql-deploy-8293b2207e7e.herokuapp.com/users/login", body)
       .then((res) => {
         if (res.status === 200) {
+
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'เข้าสู่ระบบสำเร็จ',
           
+          })
+
           localStorage.setItem("name", res.data.name)
           
           if( res.data.role==="admin"){

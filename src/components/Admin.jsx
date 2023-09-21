@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { Nav } from "react-bootstrap";
 import { Container, Row, Col, Card, Form, Image, Modal } from "react-bootstrap";
 import "./Admin.css";
@@ -7,8 +7,9 @@ import axios from "axios";
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Swal from 'sweetalert2'
 import Select from 'react-select';
-
+import { useNavigate } from "react-router-dom";
 const Admin = () => {
+  const navigate = useNavigate()
 
   const options = [
     { value: 'ทักษะศตวรรษที่ 21', label: 'ทักษะศตวรรษที่ 21' },
@@ -16,7 +17,6 @@ const Admin = () => {
     { value: 'นโยบายมหาวิทยาลัย', label: 'นโยบายมหาวิทยาลัย' },
     { value: 'แนวโน้มความเสี่ยงภายนอก', label: 'แนวโน้มความเสี่ยงภายนอก' }
   ];
-
 
 
   const [show, setShow] = useState(false);
@@ -34,8 +34,8 @@ const Admin = () => {
 
   const [plos, setPlos] = useState([]);
   const [ylos, setYlos] = useState([]);
-  const [yloValue,setYloValue] = useState(null);
-  const [ploValue,setPloValue] = useState(null);
+  const [yloValue, setYloValue] = useState(null);
+  const [ploValue, setPloValue] = useState(null);
 
 
   const onSelectTopic = (event) => {
@@ -49,19 +49,31 @@ const Admin = () => {
       setTopicData([]);
     }
     setFormName(name);
-
+    setTopicData([]);
 
   };
 
   const addTopicData = () => {
-    setTopicData([...topicsData, {
-      title: topicName,
-      anwsers: [
-        { list: "" },
-        { list: "" },
-        { list: "" }
-      ]
-    }])
+    if (topicName === "") {
+      alert('กรุณาเลือกหัวข้อที่จะบันทึก')
+    } else {
+      setTopicData([...topicsData, {
+        title: topicName,
+        anwsers: [
+          { list: "" },
+          { list: "" },
+          { list: "" }
+        ]
+      }])
+    }
+
+
+  }
+
+  const deleteToppic = (title) => {
+    let result = topicsData.filter((obj) => obj.title !== title)
+    console.log(result);
+    setTopicData(result);
   }
 
   const addPOLdata = (title) => {
@@ -73,7 +85,7 @@ const Admin = () => {
         { list: "" },
         { list: "" },
         { list: "" },
-      
+
 
       ]
 
@@ -100,32 +112,39 @@ const Admin = () => {
   // บันทึกความสอดคล้อง
   const postData = () => {
 
-    //post toppics 
-    topicsData.map((item) => {
+    if (topicsData.length > 0) {
 
-      let body = { name: item.title, groupName: formName };
-      axios.post("http://localhost:3000/education/add", body).then((respone) => {
+      //post toppics 
+      topicsData.map((item) => {
 
-        let id = respone.data.id;
-        //detail
-        item.anwsers.map((data) => {
-          let body = { answer: data.list, educationId: id };
-          axios.post("http://localhost:3000/education/detail", body)
+        let body = { name: item.title, groupName: formName };
+        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/add", body).then((respone) => {
+
+          let id = respone.data.id;
+          //detail
+          item.anwsers.map((data) => {
+            let body = { answer: data.list, educationId: id };
+            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/detail", body)
+          })
+
         })
 
       })
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'บันทึกข้อมูลสำเร็จ',
+        showConfirmButton: true,
+        timer: 1500
+      })
+      setTopicData([]);
+    } else {
+      alert('ยังไม่มีข้อมูลสำหรับบันทึก')
+    }
 
-    })
-    Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: 'บันทึกข้อมูลสำเร็จ',
-      showConfirmButton: true,
-      timer: 1500
-    })
-    setTopicData([]);
 
   };
+
 
   const postDataPlo = () => {
 
@@ -136,18 +155,18 @@ const Admin = () => {
       topicsData.map((item) => {
 
         let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
+        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/addProgram", body).then((respone) => {
 
           let id = respone.data.id;
           //detail PLOs
           item.anwsers.map((data) => {
             let body = { programId: id, anwser: data.list };
-            axios.post("http://localhost:3000/education/addDetail", body)
+            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/addDetail", body)
           })
 
         })
 
-      })  
+      })
       Swal.fire({
         position: 'center',
         icon: 'success',
@@ -155,22 +174,22 @@ const Admin = () => {
         showConfirmButton: true,
         timer: 1500
       })
-       setTopicData([]);
+      setTopicData([]);
     }
 
-  else if (lerningName === "CLOs") {
+    else if (lerningName === "CLOs") {
 
       //post toppics 
       topicsData.map((item) => {
 
         let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("http://localhost:3000/education/saveCLO", body).then((respone) => {
+        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/saveCLO", body).then((respone) => {
 
           let id = respone.data.id;
           //detail CLOs
           item.anwsers.map((data) => {
-            let body = { courselearningId: id, answer: data.list,yloId:yloValue };
-            axios.post("http://localhost:3000/education/cloDetail", body)
+            let body = { courselearningId: id, answer: data.list, yloId: yloValue };
+            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/cloDetail", body)
           })
 
         })
@@ -188,25 +207,25 @@ const Admin = () => {
       setTopicData([]);
     }
 
-  else if (lerningName === "YLOs") {
+    else if (lerningName === "YLOs") {
 
       //post toppics 
       topicsData.map((item) => {
 
         let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("http://localhost:3000/education/saveYLO", body).then((respone) => {
+        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/saveYLO", body).then((respone) => {
 
           let id = respone.data.id;
           //detail YLOs
           item.anwsers.map((data) => {
-            let body = { learningyearId: id, answer: data.list,ploId:ploValue };
-            axios.post("http://localhost:3000/education/yloDetail", body)
+            let body = { learningyearId: id, answer: data.list, ploId: ploValue };
+            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/yloDetail", body)
           })
 
         })
 
       })
-      
+
       Swal.fire({
         position: 'center',
         icon: 'success',
@@ -214,7 +233,7 @@ const Admin = () => {
         showConfirmButton: true,
         timer: 1500
       })
-     
+
       setTopicData([]);
     }
 
@@ -224,7 +243,7 @@ const Admin = () => {
 
   const getPLOs = async () => {
     let plos = [];
-    await axios.get("http://localhost:3000/education/PLO")
+    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/PLO")
       .then(res => {
         console.log(res.data)
         plos = res.data.map(item => {
@@ -236,7 +255,7 @@ const Admin = () => {
 
   const getYLOs = async () => {
     let clos = [];
-    await axios.get("http://localhost:3000/education/YLO")
+    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/YLO")
       .then(res => {
         console.log(res.data)
         clos = res.data.map(item => {
@@ -249,6 +268,7 @@ const Admin = () => {
   }
 
   useEffect(() => {
+   
     getPLOs();
     getYLOs();
   }, [])
@@ -326,7 +346,7 @@ const Admin = () => {
             <Card className="mt-4">
               <Card.Body>
                 <Card.Title className="text-center mt-4 mb-4">
-                    {formName}
+                  {formName}
                 </Card.Title>
 
                 {
@@ -353,7 +373,7 @@ const Admin = () => {
                                           data.title === "CLOs" && (
                                             <Form.Group>
                                               <Form.Label>เลือก YLOs {yloValue}</Form.Label>
-                                              <Select options={ylos}  onChange={(e)=>setYloValue(e.value)} />
+                                              <Select options={ylos} onChange={(e) => setYloValue(e.value)} />
                                             </Form.Group>
                                           )
                                         }
@@ -361,7 +381,7 @@ const Admin = () => {
                                           data.title === "YLOs" && (
                                             <Form.Group>
                                               <Form.Label>เลือก PLOs {ploValue}</Form.Label>
-                                              <Select options={plos}  onChange={(e)=>setPloValue(e.value)}/>
+                                              <Select options={plos} onChange={(e) => setPloValue(e.value)} />
                                             </Form.Group>
                                           )
                                         }
@@ -415,7 +435,7 @@ const Admin = () => {
                           <Button
                             variant="success w-50"
                             onClick={() => postDataPlo()}>
-                            บันทึกข้อมูล { lerningName}
+                            บันทึกข้อมูล {lerningName}
                           </Button>
                         </Col>
                         <Col>
@@ -486,7 +506,8 @@ const Admin = () => {
                                           <Button variant="light" onClick={() => addAwnser(indexp)}>+ เพิ่มฟิลด์คำตอบ</Button>
                                         </Col>
                                         <Col sm={2} >
-                                          <Button variant="danger" style={{ float: 'right' }} className="text-right">X</Button>
+                                          <Button variant="danger" onClick={() => deleteToppic(data.title)}
+                                            style={{ float: 'right' }} className="text-right">X</Button>
                                         </Col>
                                       </Row>
 

@@ -4,7 +4,7 @@ import { Col, Row, Container } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
-
+import moment from "moment/moment";
 const ReportAll = () => {
   const [data, setData] = useState([])
   const [show, setShow] = useState(false);
@@ -13,7 +13,7 @@ const ReportAll = () => {
   const handleShow = () => setShow(true);
   const getData = async () => {
 
-    await axios.get("http://localhost:3000/education/educations")
+    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/educations")
       .then(res => {
         setData(res.data)
 
@@ -22,7 +22,7 @@ const ReportAll = () => {
 
   const getDetail = (id) => {
   
-    axios.get(`http://localhost:3000/education/educationOne/${id}`)
+    axios.get(`https://mysql-deploy-8293b2207e7e.herokuapp.com/education/educationOne/${id}`)
       .then(res => {
 
         setDetail( res.data) 
@@ -72,7 +72,7 @@ const ReportAll = () => {
 
                           <td>{data.groupName}</td>
                           <td>{data.name}</td>
-                          <td>{data.dateCreated}</td>
+                          <td>{ moment(  data.dateCreated).format("YYYY-MM-DD")}</td>
                           <td> 
                              <Button onClick={()=>getDetail(data.educationId)} >อ่านเพิ่มเติม</Button>  
                            
