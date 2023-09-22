@@ -11,3 +11,11 @@
 .section-form{
     margin:30px auto;
 }
+button.btnprimary {
+    border: none;
+    background-color: #B57DDE
+}
+button.btnprimary :hover{
+    border: none;
+    background-color: #B57DDE
+}

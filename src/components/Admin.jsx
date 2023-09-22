@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Nav } from "react-bootstrap";
 import { Container, Row, Col, Card, Form, Image, Modal } from "react-bootstrap";
 import "./Admin.css";
@@ -7,10 +7,11 @@ import axios from "axios";
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Swal from 'sweetalert2'
 import Select from 'react-select';
-import { useNavigate } from "react-router-dom";
-const Admin = () => {
-  const navigate = useNavigate()
+import { AuthData } from "../AuthContext";
 
+const Admin = () => {
+  
+  const {isLogin} = useContext(AuthData);
   const options = [
     { value: 'ทักษะศตวรรษที่ 21', label: 'ทักษะศตวรรษที่ 21' },
     { value: 'นโยบายการศึกษาระดับประเทศ', label: 'นโยบายการศึกษาระดับประเทศ' },
@@ -25,7 +26,11 @@ const Admin = () => {
   const handleShow = () => setShow(true);
 
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
+  const [topicsMenu, settopicsMenu] = useState([]);
+
+  const [optionToppics,setOptionToppics]=useState([]);
   const [selectedValue, setSelectedValue] = useState("");
+
   const [counter, setCounter] = useState(0);
   const [topicsData, setTopicData] = useState([]);
   const [topicName, setTopicName] = useState("");
@@ -37,20 +42,34 @@ const Admin = () => {
   const [yloValue, setYloValue] = useState(null);
   const [ploValue, setPloValue] = useState(null);
 
-
   const onSelectTopic = (event) => {
-
-    setSelectedValue(event.value);
-    setTopicName(event.value);
+        setSelectedValue(event.value);
+        setTopicName(event.value);
   }
 
-  const onSelectForm = (name) => {
+
+  const getSubtopics = async (id)=>{
+    let subtopis = [];
+    await axios.get(`http://localhost:3000/topics/getOne/${id}`)
+    .then(res => {
+         subtopis = res.data.map((data)=>{
+              return ({label:data.topic,value:data.topic})
+         }) 
+         setOptionToppics(subtopis);
+    })
+
+  }
+
+
+  const onSelectForm = (name,id) => { 
+    
     if (name === "บันทึกส่วนประกอบของหลักสูตร") {
       setTopicData([]);
     }
     setFormName(name);
     setTopicData([]);
-
+    getSubtopics(id)
+    
   };
 
   const addTopicData = () => {
@@ -139,7 +158,14 @@ const Admin = () => {
       })
       setTopicData([]);
     } else {
-      alert('ยังไม่มีข้อมูลสำหรับบันทึก')
+      
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'ยังไม่มีข้อมูลสำหรับบันทึก',
+        showConfirmButton: true,
+    
+      })
     }
 
 
@@ -267,8 +293,22 @@ const Admin = () => {
 
   }
 
+  const getTopics = async () => {
+    await axios.get("http://localhost:3000/topics/")
+      .then(res => {
+
+        settopicsMenu(res.data)
+      })
+
+  }
+
   useEffect(() => {
-   
+    if(isLogin===false){
+      window.location.href='/login';
+    }
+
+    getSubtopics(1);
+    getTopics();
     getPLOs();
     getYLOs();
   }, [])
@@ -286,48 +326,28 @@ const Admin = () => {
         <Row>
           <Col sm={3} id="sidebar-wrapper">
             <Nav className="d-md-block  sidebar">
-              <div className="text-center mb-4">
+              <div className="text-center mb-2">
                 {" "}
                 <span>ผู้ใช้ : {localStorage.getItem("name")} </span>
               </div>
-              <Nav.Item>
-                <Nav.Link
-                  onClick={() => onSelectForm("บันทึกความสอดคล้องกับนโยบาย")}
-                  style={{ color: "#fff" }}
-                >
-                  บันทึกความสอดคล้องกับนโยบาย
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link
-                  onClick={() => onSelectForm("บันทึกความสอดคล้องกับนทฤษฏี")}
-                  style={{ color: "#fff" }}
-                >
-                  บันทึกความสอดคล้องกับนทฤษฏี{" "}
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link
-                  onClick={() =>
-                    onSelectForm("บันทึกความสอดคล้องกับการประเมิน")
-                  }
-                  style={{ color: "#fff" }}
-                >
-                  บันทึกความสอดคล้องกับการประเมิน
-                </Nav.Link>
-              </Nav.Item>
+       
+                {
+                  topicsMenu.map((data) => {
+                    return (
 
-              <Nav.Item>
-                <Nav.Link
-                  onClick={() =>
-                    onSelectForm("บันทึกความสอดคล้องกับความต้องการ")
-                  }
-                  style={{ color: "#fff" }}
-                >
-                  บันทึกความสอดคล้องกับความต้องการ
-                </Nav.Link>
-              </Nav.Item>
-
+                        <Nav.Item key={data.id} onClick={() => onSelectForm(data.topic,data.id)}>
+                      <Nav.Link
+                        
+                       
+                        style={{ color: "#fff" }}
+                      >
+                        {data.topic}
+                      </Nav.Link>
+                      </Nav.Item>
+                    )
+                  })
+                }
+          
               <Nav.Item>
                 <Nav.Link
                   onClick={() => onSelectForm("บันทึกส่วนประกอบของหลักสูตร")}
@@ -340,10 +360,7 @@ const Admin = () => {
           </Col>
 
           <Col sm={9} id="page-content-wrapper ">
-
-
-
-            <Card className="mt-4">
+            <Card className="mt-4 mb-4">
               <Card.Body>
                 <Card.Title className="text-center mt-4 mb-4">
                   {formName}
@@ -461,8 +478,8 @@ const Admin = () => {
                             <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล </Form.Label>
                             <Select
                               onChange={onSelectTopic}
-                              options={options}
-                              defaultValue={options[0]}
+                              options={optionToppics}
+                             
                             />
                           </Form.Group>
                         </Col>
@@ -471,7 +488,10 @@ const Admin = () => {
                             <Form.Label>กำหนดเอง </Form.Label>
                             <Form.Control type="text" placeholder="อื่นๆ"
                               onChange={(e) => setTopicName(e.target.value)}
-                              value={topicName} />
+
+                              
+                              
+                              />
                           </Form.Group>
                           <br />
                         </Col>
@@ -482,7 +502,7 @@ const Admin = () => {
                               onClick={() => addTopicData()}
                             >
 
-                              เพิ่มข้อมูล
+                            +  เพิ่มข้อมูล
                             </Button>
                           </Form.Group>
                         </Col>
@@ -588,7 +608,7 @@ const Admin = () => {
             <Row>
               <Col sm={6}>
                 <Form.Group>
-                  <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล </Form.Label>
+                  <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล  </Form.Label>
                   <Select options={options} />
                 </Form.Group>
               </Col>

@@ -1,5 +1,5 @@
-import React from "react";
-import { Container, Image } from "react-bootstrap";
+import React, { useContext } from "react";
+import { Image } from "react-bootstrap";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
@@ -9,13 +9,17 @@ import Login from "./Login";
 import ReportPLO from "./ReportPLO";
 import ReportAll from "./ReportAll";
 import MindMapping from "./MindMapping";
+import { AuthData } from "../AuthContext";
 
 const NavbarMenu = () => {
 
+  const { isLogin,setIsLogin } = useContext(AuthData);
 
   const Logout = () => {
-    localStorage.removeItem("name")
+    setIsLogin(false);
+    localStorage.clear();
   }
+  
   return (
     <div>
       <Router>
@@ -51,17 +55,14 @@ const NavbarMenu = () => {
             </Nav>
             <Nav className="p-2">
 
-              <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
-                จัดการข้อมูลหลักสูตร
-              </Nav.Link>
+              {
 
-
-              <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
-                เข้าสู่ระบบ
-              </Nav.Link>
-
-
-              <Nav.Link
+                isLogin ? ( 
+                <>
+                <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
+                  จัดการข้อมูลหลักสูตร
+                </Nav.Link>
+                <Nav.Link
                 as={Link} to={"/login"}
                 style={{ color: '#fff' }}
                 onClick={() => Logout()}
@@ -69,6 +70,21 @@ const NavbarMenu = () => {
 
                 ออกจากระบบ
               </Nav.Link>
+              </>
+                ) : (
+
+                     <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
+                เข้าสู่ระบบ
+              </Nav.Link>
+                )
+
+
+              }
+
+
+           
+
+
 
             </Nav>
           </Navbar.Collapse>
