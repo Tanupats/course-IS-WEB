@@ -1,0 +1,25 @@
+.node-item-PLOs{
+    
+    font-size: 20px;
+    background-color: rgb(80, 8, 148);
+    color: #fff;
+}
+
+.node-item-YLOs{
+    
+    font-size: 20px;
+    background-color: rgb(8, 107, 99);
+    color: #fff;
+}
+
+.node-item-CLOs{
+    
+    font-size: 20px;
+    background-color: rgb(167, 6, 132);
+    color: #fff;
+}
+
+
+.react-flow__node-default, .react-flow__node-group, .react-flow__node-input, .react-flow__node-output{
+    padding: 0px;
+}

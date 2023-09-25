@@ -3,8 +3,10 @@ import {createContext,useState} from "react";
 export const AuthData = createContext();
 
 function Context({children}){
+
+   
     const [message,setMessage] = useState("test");
-    const [isLogin,setIsLogin] = useState(false);
+    const [isLogin,setIsLogin] = useState();
 
     return (
         <AuthData.Provider 

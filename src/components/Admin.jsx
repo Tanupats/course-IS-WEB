@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Nav } from "react-bootstrap";
-import { Container, Row, Col, Card, Form, Image, Modal } from "react-bootstrap";
+import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -8,27 +8,16 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Swal from 'sweetalert2'
 import Select from 'react-select';
 import { AuthData } from "../AuthContext";
+import { Link } from 'react-router-dom';
 
 const Admin = () => {
-  
-  const {isLogin} = useContext(AuthData);
-  const options = [
-    { value: 'ทักษะศตวรรษที่ 21', label: 'ทักษะศตวรรษที่ 21' },
-    { value: 'นโยบายการศึกษาระดับประเทศ', label: 'นโยบายการศึกษาระดับประเทศ' },
-    { value: 'นโยบายมหาวิทยาลัย', label: 'นโยบายมหาวิทยาลัย' },
-    { value: 'แนวโน้มความเสี่ยงภายนอก', label: 'แนวโน้มความเสี่ยงภายนอก' }
-  ];
 
-
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const { isLogin } = useContext(AuthData);
 
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
   const [topicsMenu, settopicsMenu] = useState([]);
 
-  const [optionToppics,setOptionToppics]=useState([]);
+  const [optionToppics, setOptionToppics] = useState([]);
   const [selectedValue, setSelectedValue] = useState("");
 
   const [counter, setCounter] = useState(0);
@@ -39,37 +28,36 @@ const Admin = () => {
 
   const [plos, setPlos] = useState([]);
   const [ylos, setYlos] = useState([]);
-  const [yloValue, setYloValue] = useState(null);
-  const [ploValue, setPloValue] = useState(null);
+  const [yloValue, setYloValue] = useState(0);
+  const [ploValue, setPloValue] = useState(0);
 
   const onSelectTopic = (event) => {
-        setSelectedValue(event.value);
-        setTopicName(event.value);
+    setSelectedValue(event.value);
+    setTopicName(event.value);
   }
 
-
-  const getSubtopics = async (id)=>{
+  const getSubtopics = async (id) => {
     let subtopis = [];
     await axios.get(`http://localhost:3000/topics/getOne/${id}`)
-    .then(res => {
-         subtopis = res.data.map((data)=>{
-              return ({label:data.topic,value:data.topic})
-         }) 
-         setOptionToppics(subtopis);
-    })
+      .then(res => {
+        subtopis = res.data.map((data) => {
+          return ({ label: data.topic, value: data.topic })
+        })
+        setOptionToppics(subtopis);
+      })
 
   }
 
 
-  const onSelectForm = (name,id) => { 
-    
+  const onSelectForm = (name, id) => {
+
     if (name === "บันทึกส่วนประกอบของหลักสูตร") {
       setTopicData([]);
     }
     setFormName(name);
     setTopicData([]);
     getSubtopics(id)
-    
+
   };
 
   const addTopicData = () => {
@@ -158,13 +146,13 @@ const Admin = () => {
       })
       setTopicData([]);
     } else {
-      
+
       Swal.fire({
         position: 'center',
         icon: 'success',
         title: 'ยังไม่มีข้อมูลสำหรับบันทึก',
         showConfirmButton: true,
-    
+
       })
     }
 
@@ -177,47 +165,43 @@ const Admin = () => {
     if (lerningName === "PLOs") {
 
 
-      //post toppics 
-      topicsData.map((item) => {
+      //post plos 
+      topicsData[0].anwsers.map((item) => {
 
-        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/addProgram", body).then((respone) => {
+        let body = { name: lerningName, answer: item.list };
+        axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
 
-          let id = respone.data.id;
-          //detail PLOs
-          item.anwsers.map((data) => {
-            let body = { programId: id, anwser: data.list };
-            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/addDetail", body)
-          })
+          if (respone.status === 200)
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'บันทึกข้อมูล PLOs สำเร็จ',
+              showConfirmButton: true,
+              timer: 1500
+            })
 
         })
 
       })
-      Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'บันทึกข้อมูล PLOs สำเร็จ',
-        showConfirmButton: true,
-        timer: 1500
-      })
+
       setTopicData([]);
     }
+
 
     else if (lerningName === "CLOs") {
 
       //post toppics 
-      topicsData.map((item) => {
+      topicsData[0].anwsers.map((item) => {
 
-        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/saveCLO", body).then((respone) => {
+        let body = { name: lerningName, answer: item.list  };
+        axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
 
           let id = respone.data.id;
-          //detail CLOs
-          item.anwsers.map((data) => {
-            let body = { courselearningId: id, answer: data.list, yloId: yloValue };
-            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/cloDetail", body)
-          })
 
+          let body = {source:yloValue,target:id};
+          //for connect node Ylo to clo 
+          axios.post("http://localhost:3000/education/addDetail", body)
+          
         })
 
       })
@@ -236,17 +220,17 @@ const Admin = () => {
     else if (lerningName === "YLOs") {
 
       //post toppics 
-      topicsData.map((item) => {
+      topicsData[0].anwsers.map((item) => {
 
-        let body = { name: item.title, course: 'หลักสูตรภาษาอังกฤษเพื่อการจัดการธุรกิจ' };
-        axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/saveYLO", body).then((respone) => {
+        let body = { name: lerningName, answer:item.list };
+        axios.post("http://localhost:3000/education/addProgram", body).then((respone) => {
 
-          let id = respone.data.id;
-          //detail YLOs
-          item.anwsers.map((data) => {
-            let body = { learningyearId: id, answer: data.list, ploId: ploValue };
-            axios.post("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/yloDetail", body)
-          })
+        let id = respone.data.id;
+
+        let body = {source:ploValue,target:id};
+
+        //for connect node Ylo to plo 
+        axios.post("http://localhost:3000/education/addDetail",body)
 
         })
 
@@ -269,11 +253,11 @@ const Admin = () => {
 
   const getPLOs = async () => {
     let plos = [];
-    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/PLO")
+    await axios.get("http://localhost:3000/education/getPlo/PLOs")
       .then(res => {
         console.log(res.data)
         plos = res.data.map(item => {
-          return ({ label: item.PLO, value: item.programdetailId })
+          return ({ label: item.answer, value: item.programlerningId  })
         })
       })
     setPlos(plos);
@@ -281,11 +265,11 @@ const Admin = () => {
 
   const getYLOs = async () => {
     let clos = [];
-    await axios.get("https://mysql-deploy-8293b2207e7e.herokuapp.com/education/YLO")
+    await axios.get("http://localhost:3000/education/getPlo/YLOs")
       .then(res => {
         console.log(res.data)
         clos = res.data.map(item => {
-          return ({ label: item.YLO, value: item.id })
+          return ({ label: item.answer, value: item.programlerningId  })
         })
       })
 
@@ -303,8 +287,8 @@ const Admin = () => {
   }
 
   useEffect(() => {
-    if(isLogin===false){
-      window.location.href='/login';
+    if (isLogin === false) {
+        window.location.href = '/login';
     }
 
     getSubtopics(1);
@@ -330,30 +314,38 @@ const Admin = () => {
                 {" "}
                 <span>ผู้ใช้ : {localStorage.getItem("name")} </span>
               </div>
-       
-                {
-                  topicsMenu.map((data) => {
-                    return (
 
-                        <Nav.Item key={data.id} onClick={() => onSelectForm(data.topic,data.id)}>
+              {
+                topicsMenu.map((data) => {
+                  return (
+
+                    <Nav.Item key={data.id} onClick={() => onSelectForm(data.topic, data.id)}>
                       <Nav.Link
-                        
-                       
+
+
                         style={{ color: "#fff" }}
                       >
                         {data.topic}
                       </Nav.Link>
-                      </Nav.Item>
-                    )
-                  })
-                }
-          
+                    </Nav.Item>
+                  )
+                })
+              }
+
               <Nav.Item>
                 <Nav.Link
                   onClick={() => onSelectForm("บันทึกส่วนประกอบของหลักสูตร")}
                   style={{ color: "#fff" }}
                 >
                   บันทึกส่วนประกอบของหลักสูตร
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link
+                  as={Link} to={'/education'}
+                  style={{ color: "#fff" }}
+                >
+                  จัดการข้อมูลความสอดคล้อง
                 </Nav.Link>
               </Nav.Item>
             </Nav>
@@ -370,9 +362,9 @@ const Admin = () => {
                   formName === "บันทึกส่วนประกอบของหลักสูตร" && (
                     <Form>
                       <ButtonGroup aria-label="Basic example">
-                        <Button onClick={() => addPOLdata('PLOs')} variant="secondary">PLOs</Button>
-                        <Button onClick={() => addPOLdata('CLOs')} variant="secondary" >CLOs</Button>
-                        <Button onClick={() => addPOLdata('YLOs')} variant="secondary">YLOs</Button>
+                        <Button onClick={() => addPOLdata('PLOs')} variant="primary">PLOs</Button>
+                        <Button onClick={() => addPOLdata('CLOs')} variant="primary" >CLOs</Button>
+                        <Button onClick={() => addPOLdata('YLOs')} variant="primary">YLOs</Button>
                       </ButtonGroup>
 
                       {
@@ -479,7 +471,7 @@ const Admin = () => {
                             <Select
                               onChange={onSelectTopic}
                               options={optionToppics}
-                             
+
                             />
                           </Form.Group>
                         </Col>
@@ -489,9 +481,9 @@ const Admin = () => {
                             <Form.Control type="text" placeholder="อื่นๆ"
                               onChange={(e) => setTopicName(e.target.value)}
 
-                              
-                              
-                              />
+
+
+                            />
                           </Form.Group>
                           <br />
                         </Col>
@@ -502,7 +494,7 @@ const Admin = () => {
                               onClick={() => addTopicData()}
                             >
 
-                            +  เพิ่มข้อมูล
+                              +  เพิ่มข้อมูล
                             </Button>
                           </Form.Group>
                         </Col>
@@ -598,38 +590,6 @@ const Admin = () => {
         </Row>
       </Container>
 
-      <Modal size="lg" show={show} onHide={handleClose} animation={false}>
-        <Modal.Header className="text-center" closeButton>
-          <Modal.Title>{formName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {" "}
-          <Form>
-            <Row>
-              <Col sm={6}>
-                <Form.Group>
-                  <Form.Label>เลือกหัวข้อสำหรับบันทึกข้อมูล  </Form.Label>
-                  <Select options={options} />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>กำหนดเอง </Form.Label>
-                  <Form.Control type="text" placeholder="หัวข้อแบบกำหนดเอง" />
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="success" onClick={handleClose}>
-            บันทึกข้อมูล
-          </Button>
-          <Button variant="danger" onClick={handleClose}>
-            ยกเลิก
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

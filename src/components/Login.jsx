@@ -14,7 +14,7 @@ import Swal from 'sweetalert2'
 import { AuthData } from "../AuthContext";
 const Login = () => {
 
-  const {setIsLogin } = useContext(AuthData);
+  const { setIsLogin } = useContext(AuthData);
   const navigae = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -34,21 +34,15 @@ const Login = () => {
         .then((res) => {
           if (res.status === 200) {
 
-            setIsLogin(true);
+             setIsLogin(true);
 
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'เข้าสู่ระบบสำเร็จ',
-
-            })
-
-            localStorage.setItem("name", res.data.name)
-            localStorage.setItem("userId", res.data.userId)
+             localStorage.setItem("name", res.data.name)
+             localStorage.setItem("userId", res.data.userId)
+             localStorage.setItem("auth", true)
 
             if (res.data.role === "admin") {
               navigae('/admin');
-            }else{
+            } else {
               setIsLogin(true);
               navigae('/');
             }
@@ -108,10 +102,10 @@ const Login = () => {
                     </Form>
                     <Button
                       onClick={() => handelSubmit()}
-                     
+
                       type="submit"
 
-                      className="btnprimary w-100 mt-2"
+                      className=" w-100 mt-2"
 
                     >
                       เข้าสู่ระบบ

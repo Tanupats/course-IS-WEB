@@ -10,6 +10,7 @@ import ReportPLO from "./ReportPLO";
 import ReportAll from "./ReportAll";
 import MindMapping from "./MindMapping";
 import { AuthData } from "../AuthContext";
+import Education from "./Education";
 
 const NavbarMenu = () => {
 
@@ -99,6 +100,7 @@ const NavbarMenu = () => {
           <Route path="/login" Component={Login}></Route>
           <Route path="/reportPLO" Component={ReportPLO}></Route>
           <Route path="/Mindmap" Component={MindMapping}></Route>
+          <Route path="/education" Component={Education}></Route>
         </Routes>
       </Router>
     </div>

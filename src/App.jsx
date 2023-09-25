@@ -4,7 +4,7 @@ import NavbarMenu from './components/NavbarMenu';
 import Container from 'react-bootstrap/esm/Container';
 
 const  App =()=> {
-  const [name,setName] = useState('');
+
 
   return (
     <>

@@ -1,56 +1,94 @@
-import React, { Fragment, useCallback, useState } from "react";
-import ReactFlow,{Controls} from "react-flow-renderer";
-import { Form, Button, Col, Row } from 'react-bootstrap';
-
-const initialNodes = [
-    { id: '1', position: { x: 300, y: 300 }, data: { label: 'PLOs1' } },
-    { id: '2', position: { x: 500, y: 300 }, data: { label: 'PLOs2' } },
-    { id: '3', position: { x: -50, y: 500 }, data: { label: 'YLOs1' } },
-    { id: '4', position: { x:150, y: 500 }, data: { label: 'YLOs2' } },
-    { id: '5', position: { x:500, y: 500 }, data: { label: 'YLOs3' } },
-    { id: '6', position: { x:700, y: 500 }, data: { label: 'YLOs4' } },
-]
-
-const initialEdges = [{ id: 'e1', source: '1', target: '3' }, 
-                      { id: 'e2', source: '1', target: '4' } ,
-                      { id: 'e3', source: '1', target: '5' },
-                      { id: 'e4', source: '1', target: '5' }
-                    ];
+import React, { Fragment, useCallback, useState, useEffect } from "react";
+import ReactFlow, { addEdge, useNodesState, useEdgesState } from "react-flow-renderer";
+import { Row, Col, Button } from 'react-bootstrap';
+import './node.css';
+import axios from "axios";
 
 const MindNode = () => {
 
-    const [nodes, setNodes, onNodesChange] = useState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useState(initialEdges);
-    const [name, setName] = useState("");
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-    
+    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges])
+
+    const onLoad = (ReactFlowInstance) => {
+        ReactFlowInstance.fitView();
+    }
+    const getPlos = async () => {
+        let nodelist = [];
+        await axios.get("http://localhost:3000/education/getPlos").then(res => {
+
+            console.log(res.data)
+            nodelist = res.data.map((item) => {
+                 
+                return ({
+                    id: item.programlerningId.toString(),
+                    position: { 
+                        x: item.x ? item.x : Math.random() * window.innerWidth, 
+                        y: item.y ? item.y : Math.random() * window.innerHeight },
+                    data: { label: <div className={`node-item-${item.name}`}> {item.answer}</div> }
+                })
+            })
+
+            setNodes(nodelist);
+
+        })
+    }
+    const getEage = async () => {
+        let egelist = [];
+        await axios.get("http://localhost:3000/education/getDetail").then(res => {
+
+            egelist = res.data.map((ege) => {
+                return ({ id: `${'e' + ege.source.toString() + '-' + ege.target.toString()}`, source: ege.source.toString(), target: ege.target.toString() })
+            })
+            setEdges(egelist);
+
+        })
+    }
+
+    const UpdatePositions = async () => {
+        nodes.map((data) => {
+            let body = { x: data.position.x, y: data.position.y }
+            axios.put(`http://localhost:3000/education/updatePosition/${data.id}`, body)
+        })
+    }
+
+    useEffect(() => {
+        getPlos()
+        getEage()
+    }, [])
 
 
+    console.log(nodes)
+    console.log(edges)
 
     return (
-       <Fragment>
-           
-     
-                    <ReactFlow
-                        style={{ width: '100%', height: '100vh' }}
-                        fitView
-                        nodes={initialNodes}
-                        edges={initialEdges}
-                        onNodesChange={onNodesChange}
-                        onEdgesChange={onEdgesChange}
-                   
-                       
-                       
-                    />
+        <Fragment>
+            <Row>
+                <Col>
+                    <Button onClick={()=>UpdatePositions()} variant="light"> save position </Button>
+                </Col>
+            </Row>
+            <ReactFlow
+                style={{ width: '100%', height: '100vh' }}
+                onLoad={onLoad}
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
 
 
-                  </Fragment>
+            />
 
 
-              
-            
+        </Fragment>
 
 
-       )
+
+
+
+
+    )
 }
 export default MindNode;
