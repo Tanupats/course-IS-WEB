@@ -2,3 +2,9 @@
 nav{
   height: 60px;
 }
+.title-bg{
+  padding: 12px;
+  height:auto;
+  color: #fff;
+  background-color: #5480F0;
+}
