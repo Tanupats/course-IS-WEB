@@ -11,7 +11,7 @@ import ReportAll from "./ReportAll";
 import MindMapping from "./MindMapping";
 import { AuthData } from "../AuthContext";
 import Education from "./Education";
-
+import Filedocs from "./Filedocs"
 const NavbarMenu = () => {
 
   const { isLogin,setIsLogin } = useContext(AuthData);
@@ -101,6 +101,7 @@ const NavbarMenu = () => {
           <Route path="/reportPLO" Component={ReportPLO}></Route>
           <Route path="/Mindmap" Component={MindMapping}></Route>
           <Route path="/education" Component={Education}></Route>
+          <Route path="/file-docs" Component={Filedocs}></Route>
         </Routes>
       </Router>
     </div>

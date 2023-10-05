@@ -292,6 +292,11 @@ const Admin = () => {
                   จัดการข้อมูลความสอดคล้อง
                 </Nav.Link>
               </Nav.Item>
+              <Nav.Item>
+                <Nav.Link as={Link} to={"/file-docs"} style={{ color: "#fff" }}>
+                  บันทึกไฟล์ และเอกสาร
+                </Nav.Link>
+              </Nav.Item>
             </Nav>
           </Col>
 
