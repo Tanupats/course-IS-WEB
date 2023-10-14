@@ -7,11 +7,10 @@ import axios from "axios";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { AuthData } from "../AuthContext";
 import { Link } from "react-router-dom";
-
+import DeleteIcon from '@mui/icons-material/Delete';
 const Admin = () => {
-  const { isLogin } = useContext(AuthData);
+ 
 
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
   const [topicsMenu, settopicsMenu] = useState([]);
@@ -46,40 +45,95 @@ const Admin = () => {
   };
 
   const addTopicData = () => {
+    const checkTitle = topicsData.filter((obj)=>obj.title === topicName  )
+    console.log('check',  checkTitle)
+  
+
+
+    //ยังไม่ได้เลือกหัวข้อ
     if (topicName === "") {
-      alert("กรุณาเลือกหัวข้อที่จะบันทึก");
+      
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "กรุณาเลือกหัวข้อที่จะบันทึก",
+        showConfirmButton: true,
+        timer: 1000,
+      });
     } else {
-      setTopicData([
+
+
+      if(topicsData.length===0){
+
+        setTopicData([
+          ...topicsData,
+          {
+            title: topicName,
+            anwsers: [{ list: "" }, { list: "" }, { list: "" }],
+          },
+        ]);
+      }
+
+      if(topicsData.length>0){
+
+        
+        if(checkTitle.length){
+        alert('ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง')
+
+      }else{
+        
+         setTopicData([
         ...topicsData,
         {
           title: topicName,
-          anwsers: [{ list: "" }, { list: "" }, { list: "" }],
+          anwsers: [{ list: "",Id:1 }, { list: "",Id:2 }, { list: "",Id:3 }],
         },
       ]);
+      }
     }
+      
+     
+    }
+    
   };
 
-// ลบกลุ่มหัวข้อใหญ่ 
+  // ลบกลุ่มหัวข้อใหญ่
   const deleteToppic = (title) => {
     let result = topicsData.filter((obj) => obj.title !== title);
     setTopicData(result);
   };
 
   // ลบช่องคำตอบ
-  const deleteAnswerFil = (gindex, list) => {
-    let result = topicsData[gindex].anwsers.filter((obj) => obj.list !== list);
+  const deleteAnswerFil = (gindex, id) => {
 
-      topicsData[gindex].anwsers=result;
+    if (topicsData.length > 1) {
+      let result = topicsData[gindex].anwsers.filter((obj) => obj.Id !== id);
+      topicsData[gindex].anwsers = result;
       console.log(result);
       setCounter(counter + 1);
+    }else{
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "ไม่สามารถลบได้ จะต้องมีคำตอบอย่างน้อย 1 คำตอบ",
+        showConfirmButton: true,
+        timer: 1000,
+      });
+    }
+
   };
+
 
   const addPOLdata = (title) => {
     setLerningName(title);
     setTopicData([
       {
         title: title,
-        anwsers: [{ list: "" }, { list: "" }, { list: "" }],
+        anwsers: [
+          { list: "", Id: 1 },
+          { list: "", Id: 2 },
+          { list: "", Id: 3 },
+        ],
       },
     ]);
   };
@@ -96,7 +150,9 @@ const Admin = () => {
 
   const addAwnser = (index) => {
     console.log(topicsData[index].anwsers);
-    topicsData[index].anwsers.push({ list: "" });
+    let lastIndex = topicsData.length;
+
+    topicsData[index].anwsers.push({ list: "", Id: lastIndex + 1 });
     setCounter(counter + 1);
   };
 
@@ -240,7 +296,7 @@ const Admin = () => {
   };
 
   const getTopics = async () => {
-    await axios.get("http://localhost:3000/topics/").then((res) => {
+    await axios.get("http://localhost:3000/topics").then((res) => {
       settopicsMenu(res.data);
     });
   };
@@ -338,22 +394,29 @@ const Admin = () => {
                               <Card.Body>
                                 <Row>
                                   <Col sm={4}>
+                                    {data.title === "PLOs" && (
+                                      <Card.Title>
+                                        {" "}
+                                        เขียนผลลัพธ์การศึกษาของหลักสูตร{" "}
+                                        {data.title}
+                                      </Card.Title>
+                                    )}
 
-                                      {data.title==='PLOs' && (
-                                               <Card.Title> เขียนผลลัพธ์การศึกษาของหลักสูตร {data.title}</Card.Title>
+                                    {data.title === "CLOs" && (
+                                      <Card.Title>
+                                        {" "}
+                                        เขียนผลลัพธ์การศึกษาของรายวิชา{" "}
+                                        {data.title}
+                                      </Card.Title>
+                                    )}
 
-                                      )} 
-                                   
-                                      {data.title==='CLOs' && (
-                                               <Card.Title> เขียนผลลัพธ์การศึกษาของรายวิชา {data.title}</Card.Title>
-
-                                      )} 
-                                   
-                                      {data.title==='YLOs' && (
-                                               <Card.Title> เขียนผลลัพธ์การศึกษาระดับชั้นปี {data.title}</Card.Title>
-
-                                      )} 
-                                   
+                                    {data.title === "YLOs" && (
+                                      <Card.Title>
+                                        {" "}
+                                        เขียนผลลัพธ์การศึกษาระดับชั้นปี{" "}
+                                        {data.title}
+                                      </Card.Title>
+                                    )}
 
                                     {data.title === "CLOs" && (
                                       <Form.Group className="mt-4">
@@ -367,7 +430,7 @@ const Admin = () => {
                                       </Form.Group>
                                     )}
                                     {data.title === "YLOs" && (
-                                      <Form.Group className="mt-4" >
+                                      <Form.Group className="mt-4">
                                         <Form.Label>
                                           เลือก PLOs {ploValue}
                                         </Form.Label>
@@ -386,7 +449,6 @@ const Admin = () => {
                                       + เพิ่มช่องคำตอบ
                                     </Button>
                                   </Col>
-                               
                                 </Row>
 
                                 <div className="anwser mt-3">
@@ -394,35 +456,35 @@ const Admin = () => {
                                     {data.anwsers.map((item, index) => {
                                       return (
                                         <>
-                                        <Col sm={4}  >
-                                          <Form.Group>
-                                          <Form.Label> ข้อที่ {index+1}</Form.Label>
-                                          <Form.Control
-                                            type="text"
-                                            placeholder={`ข้อมูล ${data.title}`}
-                                            className="mt-2"
-                                            defaultValue={item.list}
-                                            onChange={(e) =>
-                                              updateAwnser(
-                                                indexp,
-                                                index,
-                                                e.target.value
-                                              )
-                                            }
-                                          />
-                                         
-                                          </Form.Group> 
-                                           <Button
-                                            variant="danger"
-                                            onClick={() =>
-                                              deleteAnswerFil(indexp, item.list)
-                                            }
-                                          >
-                                          ลบ    
-                                          </Button>
-                                        </Col>
-                                      
-                                        
+                                          <Col sm={4}>
+                                            <Form.Group>
+                                              <Form.Label>
+                                                {" "}
+                                                ข้อที่ {index + 1}
+                                              </Form.Label>
+                                              <Form.Control
+                                                type="text"
+                                                placeholder={`ข้อมูล ${data.title}`}
+                                                className="mt-2"
+                                                defaultValue={item.list}
+                                                onChange={(e) =>
+                                                  updateAwnser(
+                                                    indexp,
+                                                    index,
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </Form.Group>
+                                            <Button
+                                              variant="danger"
+                                              onClick={() =>
+                                                deleteAnswerFil(indexp, item.Id)
+                                              }
+                                            >
+                                              ลบ
+                                            </Button>
+                                          </Col>
                                         </>
                                       );
                                     })}
@@ -441,7 +503,7 @@ const Admin = () => {
                           variant="success w-50"
                           onClick={() => postDataPlo()}
                         >
-                          บันทึกข้อมูล 
+                          บันทึกข้อมูล
                         </Button>
                       </Col>
                       <Col sm={4}>
@@ -479,7 +541,7 @@ const Admin = () => {
                       <Col>
                         <Form.Group style={{ marginTop: "29px" }}>
                           <Button onClick={() => addTopicData()}>
-                            + เพิ่มข้อมูล
+                            + เพิ่มหัวข้อที่บันทึก
                           </Button>
                         </Form.Group>
                       </Col>
@@ -504,12 +566,13 @@ const Admin = () => {
                                     </Col>
                                     <Col sm={2}>
                                       <Button
-                                        variant="danger"
+
+                                        variant="light"
                                         onClick={() => deleteToppic(data.title)}
                                         style={{ float: "right" }}
                                         className="text-right"
                                       >
-                                        X
+                                       <DeleteIcon style={{color:'red'}} />
                                       </Button>
                                     </Col>
                                   </Row>
@@ -545,12 +608,12 @@ const Admin = () => {
                       })}
                     </div>
                     <Row>
-                      <Col>
+                      <Col sm={6}>
                         <Button variant="success" onClick={() => postData()}>
                           บันทึกข้อมูล
                         </Button>
                       </Col>
-                      <Col>
+                      <Col sm={6}>
                         <Button variant="danger">ยกเลิก</Button>
                       </Col>
                     </Row>

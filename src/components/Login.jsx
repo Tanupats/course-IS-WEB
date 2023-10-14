@@ -1,57 +1,43 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Col,
-  Row,
-  Form,
-  Button,
-  Image,
-  Card
-} from "react-bootstrap";
+import { Col, Row, Form, Button, Image, Card } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from 'sweetalert2'
 import { AuthData } from "../AuthContext";
 const Login = () => {
-
   const { setIsLogin } = useContext(AuthData);
   const navigae = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handelSubmit = async () => {
-
+  const handelSubmit = async (event) => {
+    event.preventDefault();
     if (email !== "" && password !== "") {
-
       const body = {
         email: email,
         password: password,
       };
 
       await axios
-        .post("https://mysql-deploy-8293b2207e7e.herokuapp.com/users/login", body)
+        .post(
+          "https://mysql-deploy-8293b2207e7e.herokuapp.com/users/login",
+          body
+        )
         .then((res) => {
           if (res.status === 200) {
+           
 
-             setIsLogin(true);
-
-             localStorage.setItem("name", res.data.name)
-             localStorage.setItem("userId", res.data.userId)
-             localStorage.setItem("auth", true)
+            localStorage.setItem("name", res.data.name);
+            localStorage.setItem("userId", res.data.userId);
+            localStorage.setItem("auth", "loginged");
 
             if (res.data.role === "admin") {
-              navigae('/admin');
-            } else {
-              setIsLogin(true);
-              navigae('/');
-            }
-
+              navigae("/admin");
+            } 
           }
         })
-        .catch(({ response }) => {
-          alert(response.data.error);
-        });
+       
     }
   };
 
@@ -66,14 +52,20 @@ const Login = () => {
               <Card.Body>
                 <Row>
                   <Col sm={12} className="p-0">
-                    <center> <Image
-                      src="./src/assets/logo.jpg"
-                      style={{ width: "20%", height: "auto" }}
-                    /></center>
+                    <center>
+                      {" "}
+                      <Image
+                        src="./src/assets/logo.jpg"
+                        style={{ width: "20%", height: "auto" }}
+                      />
+                    </center>
                   </Col>
                   <Col sm={12}>
-
-                    <Form className="section-form" id="login" >
+                    <Form
+                      className="section-form"
+                     
+                      onSubmit={ handelSubmit}
+                    >
                       <h4 className="text-center"> เข้าสู่ระบบ</h4>
 
                       <Form.Group className="mb-4">
@@ -98,18 +90,12 @@ const Login = () => {
                         />
                       </Form.Group>
 
-
+                      <Button 
+                      type="submit" 
+                      className=" w-100 mt-2">
+                        เข้าสู่ระบบ
+                      </Button>
                     </Form>
-                    <Button
-                      onClick={() => handelSubmit()}
-
-                      type="submit"
-
-                      className=" w-100 mt-2"
-
-                    >
-                      เข้าสู่ระบบ
-                    </Button>
                   </Col>
                 </Row>
               </Card.Body>

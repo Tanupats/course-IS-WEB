@@ -17,3 +17,9 @@ nav{
   height: 120px;
   border: 1px solid #000;
 }
+
+.list-docs{
+
+  max-height: 500px;
+  overflow-y: auto;
+}

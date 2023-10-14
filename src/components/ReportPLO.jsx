@@ -7,7 +7,7 @@ const ReportPLO = () => {
   const [data, setData] = useState([])
   const getData = async () => {
 
-    await axios.get("http://localhost:3000/education/getPlos")
+    await axios.get("https://is-api-983356c7b083.herokuapp.com/education/getPlos")
       .then(res => {
         setData(res.data)
      

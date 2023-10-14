@@ -51,7 +51,7 @@ const Education = () => {
 
     const getEducation = async () => {
         let topics = [];
-        await axios.get("http://localhost:3000/topics").then(res => {
+        await axios.get("http://localhost:3000/topics").then((res) => {
 
             topics = res.data.map((data) => {
 

@@ -58,7 +58,7 @@ const NavbarMenu = () => {
 
               {
 
-                isLogin ? ( 
+                isLogin === "loginged" ? ( 
                 <>
                 <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
                   จัดการข้อมูลหลักสูตร

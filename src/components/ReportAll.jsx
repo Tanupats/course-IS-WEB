@@ -14,7 +14,7 @@ const ReportAll = () => {
   const getData = async () => {
     await axios
       .get(
-        "https://mysql-deploy-8293b2207e7e.herokuapp.com/education/educations"
+        "https://is-api-983356c7b083.herokuapp.com/education"
       )
       .then((res) => {
         setData(res.data);
