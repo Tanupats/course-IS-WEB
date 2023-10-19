@@ -3,7 +3,8 @@ import ReactFlow, { addEdge, useNodesState, useEdgesState } from "react-flow-ren
 import { Row, Col, Button } from 'react-bootstrap';
 import './node.css';
 import axios from "axios";
-
+import SchemaIcon from '@mui/icons-material/Schema';
+import Swal from "sweetalert2";
 const MindNode = () => {
 
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -12,11 +13,12 @@ const MindNode = () => {
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges])
 
     const onLoad = (ReactFlowInstance) => {
-        ReactFlowInstance.fitView();
+                ReactFlowInstance.fitView();
     }
+
     const getPlos = async () => {
         let nodelist = [];
-        await axios.get("https://is-api-983356c7b083.herokuapp.com/education/getPlos").then(res => {
+        await axios.get("http://localhost:3000/education/getPlos").then(res => {
 
             console.log(res.data)
             nodelist = res.data.map((item) => {
@@ -36,7 +38,7 @@ const MindNode = () => {
     }
     const getEage = async () => {
         let egelist = [];
-        await axios.get("https://is-api-983356c7b083.herokuapp.com/education/getDetail").then(res => {
+        await axios.get("http://localhost:3000/education/getDetail").then(res => {
 
             egelist = res.data.map((ege) => {
                 return ({ id: `${'e' + ege.source.toString() + '-' + ege.target.toString()}`, source: ege.source.toString(), target: ege.target.toString() })
@@ -49,24 +51,29 @@ const MindNode = () => {
     const UpdatePositions = async () => {
         nodes.map((data) => {
             let body = { x: data.position.x, y: data.position.y }
-            axios.put(`https://is-api-983356c7b083.herokuapp.com/education/updatePosition/${data.id}`, body)
+            axios.put(`http://localhost:3000/education/updatePosition/${data.id}`, body)
         })
+       
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "แก้ไขข้อมูลสำเร็จ",
+        timer: 1500,
+      });
+
+      await getPlos();
+      await getEage();
     }
 
     useEffect(() => {
         getPlos()
         getEage()
     }, [])
-
-
-    console.log(nodes)
-    console.log(edges)
-
     return (
         <Fragment>
             <Row>
                 <Col>
-                    <Button onClick={()=>UpdatePositions()} variant="light"> save position </Button>
+                    <Button    onClick={()=>UpdatePositions()} variant="warning">  <SchemaIcon /> แก้ไขตำแหน่ง </Button>
                 </Col>
             </Row>
             <ReactFlow

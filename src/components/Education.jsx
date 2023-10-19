@@ -14,10 +14,19 @@ import Swal from 'sweetalert2'
 const Education = () => {
     const [show, setShow] = useState(false);
     const [showGroup, setShowGroup] = useState(false);
+    const [showDetail, setShowDetail] = useState(false);
+    const [title, setTitle] = useState("");
 
 
     const [getOne, setGetone] = useState([]);
+    //topics
     const [option, setOption] = useState([]);
+    const [topics, setTopics] = useState([]);
+
+    //education
+    const [data, setData] = useState([]);
+    const [detail, setDetail] = useState([]);
+
     const [selectedValue, setSelectedValue] = useState("");
 
     const [educationId, setEducationId] = useState("");
@@ -28,45 +37,51 @@ const Education = () => {
     const [itemId, setItemID] = useState("");
     const [forUpdateGroup, setforUpdateGroup] = useState("");
     const [GroupId, setGroupId] = useState("");
-
-
+    const [selectTable, setSelectTable] = useState("");
 
     const handleClose = () => {
-
-        setShow(false);
-        setItemID("");
-        setName("");
+          setShow(false);
+          setItemID("");
+          setName("");
     }
 
     const handleCloseGroup = () => {
-        setShowGroup(false);
+          setShowGroup(false);
+    }
+
+    const handleCloseDetail = () => {
+          setShowDetail(false);
     }
 
     const handleShow = (id, name) => {
-        setItemID(id);
-        setName(name);
-        setShow(true);
+          setItemID(id);
+          setName(name);
+          setShow(true);
     };
 
 
-    const getEducation = async () => {
+    //หัวข้อใหญ่
+    const getTopic = async () => {
         let topics = [];
         await axios.get("http://localhost:3000/topics").then((res) => {
-
             topics = res.data.map((data) => {
-
                 return ({ label: data.topic, value: data.id })
             })
+
+            setTopics(res.data);
             setOption(topics);
         })
 
     }
+
+
 
     const getOneEducation = async (id) => {
         await axios.get(`http://localhost:3000/topics/getOne/${id}`).then(res => {
             setGetone(res.data);
         })
     }
+
 
     const getAllEducation = async () => {
         await axios.get(`http://localhost:3000/topics/getAll`).then(res => {
@@ -80,6 +95,7 @@ const Education = () => {
         setforUpdateGroup(event.label);
         setGroupId(event.value);
     }
+
 
     const onSelectEducationTopic = (event) => {
         setEducationTopic(event);
@@ -116,7 +132,7 @@ const Education = () => {
                         showConfirmButton: true,
                         timer: 1500
                     })
-                    getEducation();
+                    getTopic();
                 }
             })
     }
@@ -137,7 +153,7 @@ const Education = () => {
                 }
             })
 
-        await getEducation();
+        await getTopic();
         handleCloseGroup()
     }
 
@@ -175,7 +191,7 @@ const Education = () => {
 
     }
 
-    const DeleteGroup = async () => {
+    const DeleteGroup = async (Id) => {
 
         Swal.fire({
             title: 'ต้องการลบข้อมูลหรือไม่?',
@@ -187,7 +203,7 @@ const Education = () => {
             cancelButtonText: 'ยกเลิก'
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`http://localhost:3000/topics/deleteGroup/${GroupId}`)
+                axios.delete(`http://localhost:3000/topics/deleteGroup/${Id}`)
                     .then(res => {
                         if (res.status === 200) {
                             Swal.fire({
@@ -200,11 +216,11 @@ const Education = () => {
 
                         }
                     })
-                
+
             }
         })
-        
-        await  getAllEducation();
+
+        await getAllEducation();
         setShow(false);
 
     }
@@ -240,9 +256,41 @@ const Education = () => {
         setShow(false);
     }
 
+
+    const onSelectTable = (val) => {
+        setSelectTable(val)
+        if (val === "ข้อมูลที่บันทึกความสอดคล้อง") {
+            getEducations();
+        }
+    }
+
+
+    const getEducations = async () => {
+        await axios .get("http://localhost:3000/education")
+            .then((res) => {
+                setData(res.data);
+            });
+    };
+
+
+    const getDetail = (id,title) => {
+        setTitle(title);
+        axios.get(`http://localhost:3000/education/educationOne/${id}`
+            )
+            .then((res) => {
+                setDetail(res.data)
+            });
+
+            setShowDetail(true);
+    };
+
+
+
     useEffect(() => {
-        getEducation();
+        getTopic();
         getAllEducation();
+        getEducations();
+        onSelectTable("ข้อมูลความสอดคล้อง");
     }, [])
 
     useEffect(() => {
@@ -256,97 +304,190 @@ const Education = () => {
         <>
             <Container fluid>
                 <Row className="mb-4">
-                    <Col sm={2}></Col>
-                    <Col sm={8}>
+
+                    <Col sm={12}>
                         <Row className="mt-4">
 
                             <Col sm={4}>
-                                <Form.Group>
-                                    <Form.Label>เลือกหัวข้อสำหรับแสดงข้อมูล </Form.Label>
-                                    <Select
-                                        onChange={onSelectTopic}
-                                        options={option}
-                                        value={selectedValue}
 
-                                    />
-
-                                </Form.Group>
                             </Col>
-                            
-                            {
-                                forUpdateGroup !== "" && (
-                                    <>
-                                    <Col sm={6}>
-                                <Form.Group >
-                                    <Form.Label>หัวข้อที่เลือก {GroupId}</Form.Label>
-                                    <Form.Control
-                                        onChange={(e) => setforUpdateGroup(e.target.value)}
-                                        type='text'
-                                        value={forUpdateGroup} />
 
-                                </Form.Group>
-                            </Col>
-                                    <Col sm={2}>
-                                        <Button onClick={() => updateGroupId()} style={{ marginTop: '32px' }} variant="warning">แก้ไข</Button> {'  '}
-                                        <Button onClick={() => DeleteGroup()} style={{ marginTop: '32px' }} variant="danger">ลบ</Button>
-
-                                    </Col>
-
-
-                                    </> )
-                            }
 
 
                         </Row>
                         <Row className="mb-4">
 
 
-                            <Col sm={6}>
+                            <Col sm={12}>
                                 <Form.Group>
 
-                                    <Button variant="primary" onClick={getAllEducation} className="mt-4">แสดงทั้งหมด</Button> {' '}
-                                    <Button variant="success" onClick={() => setShow(true)} className="mt-4"><i className="fa-solid fa-plus"></i>เพิ่มข้อมูล</Button> {' '}
-                                    <Button variant="success" onClick={() => setShowGroup(true)} className="mt-4"><i className="fa-solid fa-plus"></i>เพิ่มกลุ่มข้อมูล</Button>
+                                    <Button variant="light" onClick={() => onSelectTable("ข้อมูลที่บันทึกความสอดคล้อง")} className="mt-4">ข้อมูลที่บันทึกความสอดคล้อง</Button> {' '}
+                                    <Button variant="light" onClick={() => onSelectTable("ข้อมูลความสอดคล้อง")} className="mt-4">หัวข้อความสอดคล้อง</Button> {' '}
+                                    <Button variant="light" onClick={() => onSelectTable("ข้อมูลกลุ่มความสอดคล้อง")} className="mt-4">ข้อมูลกลุ่มความสอดคล้อง</Button> {' '}
+
+
                                 </Form.Group>
                             </Col>
                         </Row>
 
+
                         <TableContainer component={Paper} className="mt-2">
-                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>#ID</TableCell>
-                                        <TableCell >Topic</TableCell>
-                                        <TableCell >Action</TableCell>
+                            <div className="title text-center mt-4">
+                                <h5>{selectTable}</h5>
+                            </div>
 
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {getOne.map((row) => (
-                                        <TableRow
-                                            key={row.id}
+                            {
+                                selectTable === "ข้อมูลที่บันทึกความสอดคล้อง" && (<>
 
-                                        >
-                                            <TableCell component="th" scope="row">
-                                                {row.id}
-                                            </TableCell>
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>ลำดับ</TableCell>
+                                                <TableCell >ชื่อเรื่อง</TableCell>
+                                                <TableCell >กลุ่ม</TableCell>
+                                                <TableCell >รายละเอียด</TableCell>
+                                                <TableCell >จัดการ</TableCell>
+                                            </TableRow>
+                                        </TableHead>
 
-                                            <TableCell component="th" scope="row">
-                                                {row.topic}
-                                            </TableCell>
-                                            <TableCell component="th" scope="row">
-                                                <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
-                                                <Button variant="danger" onClick={() => DeleteItemId(row.id)}>ลบ</Button>
-                                            </TableCell>
+                                        <TableBody>
+                                            {data.map((row) => (
+                                                <TableRow
+                                                    key={row.id}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        {row.educationId}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        {row.name}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        {row.groupName}
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row">
+                                                        <Button onClick={()=>getDetail(row.educationId,row.name)} >รายละเอียด</Button>
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row">
+                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
+                                                        <Button variant="danger" onClick={() => DeleteItemId(row.id)}>ลบ</Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
 
 
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                </>)
+                            }
+                            {
+                                selectTable === "ข้อมูลความสอดคล้อง" && (<>
+
+                                    <Row>
+                                        <Col sm={4}>
+                                            <Form.Group>
+                                                <Form.Label>เลือกกลุ่มสำหรับแสดงข้อมูล </Form.Label>
+                                                <Select
+                                                    onChange={onSelectTopic}
+                                                    options={option}
+                                                    value={selectedValue}
+
+                                                />
+
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+
+                                            <Button variant="success" onClick={() => setShow(true)} className="mt-4">
+                                                <i className="fa-solid fa-plus"></i>เพิ่มข้อมูลความสอดคล้อง</Button> {' '}
+                                        </Col>
+                                    </Row>
+
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>ลำดับ</TableCell>
+                                                <TableCell >ชื่อเรื่อง</TableCell>
+                                                <TableCell >จัดการ</TableCell>
+
+                                            </TableRow>
+                                        </TableHead>
+
+                                        <TableBody>
+                                            {getOne.map((row) => (
+                                                <TableRow
+                                                    key={row.id}
+
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        {row.id}
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row">
+                                                        {row.topic}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
+                                                        <Button variant="danger" onClick={() => DeleteItemId(row.id)}>ลบ</Button>
+                                                    </TableCell>
+
+
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+
+
+                                </>)
+                            }
+
+                            {
+                                selectTable === "ข้อมูลกลุ่มความสอดคล้อง" && (<>
+
+                                    <Row>
+                                        <Col sm={4}>
+                                            <Button onClick={() => setShowGroup(true)}>เพิ่มกลุ่มข้อมูลความสอดคล้อง</Button>
+                                        </Col>
+                                    </Row>
+                                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>ลำดับ</TableCell>
+                                                <TableCell >ชื่อกลุ่ม</TableCell>
+                                                <TableCell >จัดการ</TableCell>
+
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {topics.map((row) => (
+                                                <TableRow
+                                                    key={row.id}
+
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        {row.id}
+                                                    </TableCell>
+
+                                                    <TableCell component="th" scope="row">
+                                                        {row.topic}
+                                                    </TableCell>
+                                                    <TableCell component="th" scope="row">
+                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
+                                                        <Button variant="danger" onClick={() => DeleteGroup(row.id)}>ลบ</Button>
+                                                    </TableCell>
+
+
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </>)
+                            }
+
                         </TableContainer>
                     </Col>
-                    <Col sm={2}></Col>
+
                 </Row>
 
                 <Modal
@@ -356,28 +497,22 @@ const Education = () => {
                     keyboard={false}
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title> {itemId ? 'แก้ไขข้อมูล' : 'เพิ่มข้อมูล'} </Modal.Title>
+                        <Modal.Title> {itemId ? 'แก้ไขข้อมูล' : 'เพิ่มข้อมูลความสอดคล้อง'} </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form >
-                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>ชื่อเรื่อง</Form.Label>
-                                <Form.Control
-                                    onChange={(e) => setName(e.target.value)}
-                                    type="text"
-                                    placeholder="ตัวอย่าง ทักษะศตวรรษที่ 21"
-                                    value={name} required />
-                            </Form.Group>
+
                             {
                                 itemId === "" && (
 
 
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-                                        <Form.Label>เลือกกลุ่มของข้อมูล {educationId}</Form.Label>
+                                        <Form.Label>เลือกกลุ่มของข้อมูล</Form.Label>
                                         <Select
                                             onChange={onSelectEducationTopic}
                                             options={option}
                                             value={educationTopic}
+
 
                                         />
 
@@ -386,7 +521,14 @@ const Education = () => {
                                     </Form.Group>
                                 )
                             }
-
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                                <Form.Label>ชื่อเรื่อง</Form.Label>
+                                <Form.Control
+                                    onChange={(e) => setName(e.target.value)}
+                                    type="text"
+                                    placeholder="ตัวอย่าง ทักษะศตวรรษที่ 21"
+                                    value={name} required />
+                            </Form.Group>
 
 
 
@@ -405,6 +547,7 @@ const Education = () => {
                             variant="primary">ยกเลิก</Button>
                     </Modal.Footer>
                 </Modal>
+
                 <Modal
 
                     show={showGroup}
@@ -440,6 +583,49 @@ const Education = () => {
                         <Button
                             onClick={() => handleCloseGroup()}
                             variant="primary">ยกเลิก</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal
+                    show={showDetail}
+                    onHide={handleCloseDetail}
+                    backdrop="static"
+                    keyboard={false}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title> {title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row>
+                            {
+                                detail.map((ans) => {
+                                    return (<>
+                                        <Col sm={12} className="text-left mb-4">
+                                            <Form>
+
+
+                                           
+                                            <Form.Group>
+                                                <Form.Control type="text"  defaultValue={ans.answer} />
+                                            </Form.Group>
+                                            </Form>
+                                        </Col>
+                                    </>)
+                                })
+                            }
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="success"
+                            form="save"
+                          
+                        >
+
+                            แก้ไขข้อมูล
+                        </Button>
+                        <Button
+                            onClick={() => handleCloseDetail()}
+                            variant="danger">ปิด</Button>
                     </Modal.Footer>
                 </Modal>
             </Container>

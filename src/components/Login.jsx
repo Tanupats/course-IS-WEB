@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Col, Row, Form, Button, Image, Card } from "react-bootstrap";
+import { Col, Row, Form, Button, Image, Card,Alert } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,34 +10,37 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg,setErrorMsg] = useState("");
 
   const handelSubmit = async (event) => {
     event.preventDefault();
     if (email !== "" && password !== "") {
-      const body = {
+        const body = {
         email: email,
         password: password,
       };
 
       await axios
         .post(
-          "https://mysql-deploy-8293b2207e7e.herokuapp.com/users/login",
+          "http://localhost:3000/users/login",
           body
         )
         .then((res) => {
           if (res.status === 200) {
-           
-
-            localStorage.setItem("name", res.data.name);
-            localStorage.setItem("userId", res.data.userId);
+            localStorage.setItem("name", res.data[0].name);
+            localStorage.setItem("userId", res.data[0].userId);
             localStorage.setItem("auth", "loginged");
+            localStorage.setItem("role", res.data[0].role);
 
-            if (res.data.role === "admin") {
-              navigae("/admin");
-            } 
+            if (res.data[0].role === "admin") {
+                navigae("/admin");
+            }
           }
+        }).catch((response)=>{
+          setErrorMsg(response.response.data.error.message)
+   
         })
-       
+
     }
   };
 
@@ -63,8 +66,8 @@ const Login = () => {
                   <Col sm={12}>
                     <Form
                       className="section-form"
-                     
-                      onSubmit={ handelSubmit}
+
+                      onSubmit={handelSubmit}
                     >
                       <h4 className="text-center"> เข้าสู่ระบบ</h4>
 
@@ -90,10 +93,24 @@ const Login = () => {
                         />
                       </Form.Group>
 
-                      <Button 
-                      type="submit" 
-                      className=" w-100 mt-2">
+                        {
+                          errorMsg !== "" && (
+                            <Alert variant="danger" className="mt-4">
+                             {errorMsg} 
+                            </Alert>
+                          )
+                        }
+                      <Button
+                        type="submit"
+                        className=" w-100 mt-2">
                         เข้าสู่ระบบ
+                      </Button>
+                      <hr />
+                          ยังไม่มีบัญชี คลิกลงทะเบียน
+                      <Button
+                        type="submit"
+                        className=" w-100 mt-2">
+                        ลงทะเบียน
                       </Button>
                     </Form>
                   </Col>

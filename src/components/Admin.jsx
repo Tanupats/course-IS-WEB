@@ -4,13 +4,16 @@ import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
+
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import PersonIcon from '@mui/icons-material/Person';
+import FormPlos from "./FormPlos";
 const Admin = () => {
- 
+
 
   const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบาย");
   const [topicsMenu, settopicsMenu] = useState([]);
@@ -45,14 +48,14 @@ const Admin = () => {
   };
 
   const addTopicData = () => {
-    const checkTitle = topicsData.filter((obj)=>obj.title === topicName  )
-    console.log('check',  checkTitle)
-  
+    const checkTitle = topicsData.filter((obj) => obj.title === topicName)
+    console.log('check', checkTitle)
+
 
 
     //ยังไม่ได้เลือกหัวข้อ
     if (topicName === "") {
-      
+
       Swal.fire({
         position: "center",
         icon: "success",
@@ -63,7 +66,7 @@ const Admin = () => {
     } else {
 
 
-      if(topicsData.length===0){
+      if (topicsData.length === 0) {
 
         setTopicData([
           ...topicsData,
@@ -74,27 +77,27 @@ const Admin = () => {
         ]);
       }
 
-      if(topicsData.length>0){
+      if (topicsData.length > 0) {
 
-        
-        if(checkTitle.length){
-        alert('ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง')
 
-      }else{
-        
-         setTopicData([
-        ...topicsData,
-        {
-          title: topicName,
-          anwsers: [{ list: "",Id:1 }, { list: "",Id:2 }, { list: "",Id:3 }],
-        },
-      ]);
+        if (checkTitle.length) {
+          alert('ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง')
+
+        } else {
+
+          setTopicData([
+            ...topicsData,
+            {
+              title: topicName,
+              anwsers: [{ list: "", Id: 1 }, { list: "", Id: 2 }, { list: "", Id: 3 }],
+            },
+          ]);
+        }
       }
+
+
     }
-      
-     
-    }
-    
+
   };
 
   // ลบกลุ่มหัวข้อใหญ่
@@ -106,12 +109,12 @@ const Admin = () => {
   // ลบช่องคำตอบ
   const deleteAnswerFil = (gindex, id) => {
 
-    if (topicsData.length > 1) {
+    if (topicsData[gindex].anwsers.length > 1) {
       let result = topicsData[gindex].anwsers.filter((obj) => obj.Id !== id);
       topicsData[gindex].anwsers = result;
       console.log(result);
       setCounter(counter + 1);
-    }else{
+    } else {
       Swal.fire({
         position: "center",
         icon: "success",
@@ -143,16 +146,19 @@ const Admin = () => {
       setLerningName("PLOs");
       addPOLdata("PLOs");
     }
-
-    setFormName(name);
-    getSubtopics(id);
+    else{
+       setTopicData([]);
+       setFormName(name);
+       getSubtopics(id);
+    }
+   
   };
 
   const addAwnser = (index) => {
     console.log(topicsData[index].anwsers);
-    let lastIndex = topicsData.length;
+    let newID = 'randId';
 
-    topicsData[index].anwsers.push({ list: "", Id: lastIndex + 1 });
+    topicsData[index].anwsers.push({ list: "", Id: newID });
     setCounter(counter + 1);
   };
 
@@ -161,6 +167,7 @@ const Admin = () => {
     console.log(topicsData[index].anwsers);
     setCounter(counter + 1);
   };
+
 
   // บันทึกความสอดคล้อง
   const postData = () => {
@@ -196,6 +203,8 @@ const Admin = () => {
       });
     }
   };
+
+
 
   const postDataPlo = () => {
     if (lerningName === "PLOs") {
@@ -312,7 +321,11 @@ const Admin = () => {
     console.log(topicsData);
   }, [topicsData]);
 
-  useEffect(() => {}, [counter]);
+  useEffect(() => {
+
+   }, [counter]
+   );
+
   return (
     <>
       <Container fluid>
@@ -321,7 +334,7 @@ const Admin = () => {
             <Nav className="d-md-block  sidebar">
               <div className="text-center mb-2">
                 {" "}
-                <span>ผู้ใช้ : {localStorage.getItem("name")} </span>
+                <h6> <PersonIcon />  {localStorage.getItem("name")} </h6>
               </div>
 
               {topicsMenu.map((data) => {
@@ -364,154 +377,23 @@ const Admin = () => {
                 </Card.Title>
 
                 {formName === "บันทึกส่วนประกอบของหลักสูตร" && (
-                  <Form>
-                    <ButtonGroup aria-label="Basic example">
-                      <Button
-                        onClick={() => addPOLdata("PLOs")}
-                        variant="primary"
-                      >
-                        PLOs
-                      </Button>
-                      <Button
-                        onClick={() => addPOLdata("CLOs")}
-                        variant="primary"
-                      >
-                        CLOs
-                      </Button>
-                      <Button
-                        onClick={() => addPOLdata("YLOs")}
-                        variant="primary"
-                      >
-                        YLOs
-                      </Button>
-                    </ButtonGroup>
-
-                    {topicsData.map((data, indexp) => {
-                      return (
-                        <Row className="mb-3 mt-3" key={indexp}>
-                          <Col>
-                            <Card>
-                              <Card.Body>
-                                <Row>
-                                  <Col sm={4}>
-                                    {data.title === "PLOs" && (
-                                      <Card.Title>
-                                        {" "}
-                                        เขียนผลลัพธ์การศึกษาของหลักสูตร{" "}
-                                        {data.title}
-                                      </Card.Title>
-                                    )}
-
-                                    {data.title === "CLOs" && (
-                                      <Card.Title>
-                                        {" "}
-                                        เขียนผลลัพธ์การศึกษาของรายวิชา{" "}
-                                        {data.title}
-                                      </Card.Title>
-                                    )}
-
-                                    {data.title === "YLOs" && (
-                                      <Card.Title>
-                                        {" "}
-                                        เขียนผลลัพธ์การศึกษาระดับชั้นปี{" "}
-                                        {data.title}
-                                      </Card.Title>
-                                    )}
-
-                                    {data.title === "CLOs" && (
-                                      <Form.Group className="mt-4">
-                                        <Form.Label>
-                                          เลือก YLOs {yloValue}
-                                        </Form.Label>
-                                        <Select
-                                          options={ylos}
-                                          onChange={(e) => setYloValue(e.value)}
-                                        />
-                                      </Form.Group>
-                                    )}
-                                    {data.title === "YLOs" && (
-                                      <Form.Group className="mt-4">
-                                        <Form.Label>
-                                          เลือก PLOs {ploValue}
-                                        </Form.Label>
-                                        <Select
-                                          options={plos}
-                                          onChange={(e) => setPloValue(e.value)}
-                                        />
-                                      </Form.Group>
-                                    )}
-
-                                    <Button
-                                      variant="light mt-4"
-                                      onClick={() => addAwnser(indexp)}
-                                    >
-                                      {" "}
-                                      + เพิ่มช่องคำตอบ
-                                    </Button>
-                                  </Col>
-                                </Row>
-
-                                <div className="anwser mt-3">
-                                  <Row>
-                                    {data.anwsers.map((item, index) => {
-                                      return (
-                                        <>
-                                          <Col sm={4}>
-                                            <Form.Group>
-                                              <Form.Label>
-                                                {" "}
-                                                ข้อที่ {index + 1}
-                                              </Form.Label>
-                                              <Form.Control
-                                                type="text"
-                                                placeholder={`ข้อมูล ${data.title}`}
-                                                className="mt-2"
-                                                defaultValue={item.list}
-                                                onChange={(e) =>
-                                                  updateAwnser(
-                                                    indexp,
-                                                    index,
-                                                    e.target.value
-                                                  )
-                                                }
-                                              />
-                                            </Form.Group>
-                                            <Button
-                                              variant="danger"
-                                              onClick={() =>
-                                                deleteAnswerFil(indexp, item.Id)
-                                              }
-                                            >
-                                              ลบ
-                                            </Button>
-                                          </Col>
-                                        </>
-                                      );
-                                    })}
-                                  </Row>
-                                </div>
-                              </Card.Body>
-                            </Card>
-                          </Col>
-                        </Row>
-                      );
-                    })}
-
-                    <Row className="mt-4 ">
-                      <Col sm={4}>
-                        <Button
-                          variant="success w-50"
-                          onClick={() => postDataPlo()}
-                        >
-                          บันทึกข้อมูล
-                        </Button>
-                      </Col>
-                      <Col sm={4}>
-                        <Button variant="danger w-50">ยกเลิก</Button>
-                      </Col>
-                    </Row>
-                  </Form>
+                  <FormPlos
+                    ylos={ylos}
+                    plos={plos}
+                    yloValue={yloValue}
+                    ploValue={ploValue}
+                    addPOLdata={addPOLdata}
+                    topicsData={topicsData}
+                    setYloValue={setYloValue}
+                    setPloValue={setPloValue}
+                    addAwnser={addAwnser}
+                    updateAwnser={updateAwnser}
+                    deleteAnswerFil={deleteAnswerFil}
+                    postDataPlo={postDataPlo}
+                  />
                 )}
+
+
 
                 {formName !== "บันทึกส่วนประกอบของหลักสูตร" && (
                   <Form>
@@ -572,7 +454,7 @@ const Admin = () => {
                                         style={{ float: "right" }}
                                         className="text-right"
                                       >
-                                       <DeleteIcon style={{color:'red'}} />
+                                        <DeleteIcon style={{ color: 'red' }} />
                                       </Button>
                                     </Col>
                                   </Row>

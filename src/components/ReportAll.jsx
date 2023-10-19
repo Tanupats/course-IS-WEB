@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Container, Card, Button } from "react-bootstrap";
+import { Col, Row, Container, Card } from "react-bootstrap";
 import axios from "axios";
-import moment from "moment/moment";
 import EdcationDetail from "./EducationDetail";
 import '../index.css'
 const ReportAll = () => {
+
   const [data, setData] = useState([]);
-
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
   const getData = async () => {
     await axios
       .get(
-        "https://is-api-983356c7b083.herokuapp.com/education"
+        "http://localhost:3000/education"
       )
       .then((res) => {
         setData(res.data);
       });
   };
 
- 
 
   useEffect(() => {
     getData();
@@ -38,7 +32,7 @@ const ReportAll = () => {
               </div>
 
               <Row>
-                {data.map((data) => {
+                {data?.map((data) => {
                   return (
                     <>
                       <Col sm={4} className="mb-4">
@@ -61,11 +55,7 @@ const ReportAll = () => {
       
 
                          <EdcationDetail id={data.educationId}/>
-                          <Card.Footer>
-
-                          <Button>แก้ไข</Button>
-                          <Button>ลบ</Button>
-                          </Card.Footer>
+                        
                         </Card>
                       </Col>
                     </>
