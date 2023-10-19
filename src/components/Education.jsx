@@ -10,7 +10,9 @@ import Paper from '@mui/material/Paper';
 import axios from "axios";
 import Select from 'react-select';
 import Swal from 'sweetalert2'
-
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import './Admin.css';
 const Education = () => {
     const [show, setShow] = useState(false);
     const [showGroup, setShowGroup] = useState(false);
@@ -44,17 +46,17 @@ const Education = () => {
     const [selectTable, setSelectTable] = useState("");
 
     const handleClose = () => {
-          setShow(false);
-          setItemID("");
-          setName("");
+        setShow(false);
+        setItemID("");
+        setName("");
     }
 
     const handleCloseGroup = () => {
-          setShowGroup(false);
+        setShowGroup(false);
     }
 
     const handleCloseDetail = () => {
-          setShowDetail(false);
+        setShowDetail(false);
     }
 
 
@@ -103,16 +105,16 @@ const Education = () => {
 
     //เลือกหัวข้อใหญ่ สำหรับแสดงข้อมูล
     const onSelectTopic = (event) => {
-          setSelectedValue(event);
-          getOneEducation(event.value);  
+        setSelectedValue(event);
+        getOneEducation(event.value);
 
     }
 
 
     //เลือกหัวข้อจาดฟอร์มเพิ่มข้อมูล
     const onSelectEducationTopic = (event) => {
-          setEducationTopic(event);
-          setEducationId(event.value)
+        setEducationTopic(event);
+        setEducationId(event.value)
     }
 
 
@@ -182,24 +184,28 @@ const Education = () => {
     };
 
 
-    const updateEducation = async()=>{
-        const body = {groupName:educationTopic.label,name:title}
-        await axios.put(`http//localhost:3000/${eId}`,body).then((res)=>{
-            if(res.status === 200){
+    const updateEducation = async () => {
+
+        const body = { groupName: educationTopic.label ? educationTopic.label : gname, name: title }
+        await axios.put(`http://localhost:3000/education/${eId}`, body).then((res) => {
+            if (res.status === 200) {
                 alert("แก้ไขข้อมูลสำเร็จ")
+
             }
         })
+
+        await getEducations();
     }
 
-    const updateEducationDetail = async ()=>{
+    const updateEducationDetail = () => {
 
-          detail.map((item)=>{
-            let body ={answer:item.answer};        
-            axios.put(`http//localhost:3000/education/detail/${item.educationdetailId}`,body)
-            })
+        detail.map((item) => {
+            let body = { answer: item.answer };
+            axios.put(`http://localhost:3000/education/detail/${item.educationdetailId}`, body)
+        })
 
-          updateEducation();  
-          handleCloseDetail()
+        updateEducation();
+        handleCloseDetail()
 
     }
 
@@ -236,6 +242,42 @@ const Education = () => {
         setShow(false);
 
     }
+    
+    const DeleteEducation = async (id) => {
+
+        Swal.fire({
+            title: 'ต้องการลบข้อมูลหรือไม่?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ตกลง',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`http://localhost:3000/education/detail/${id}`)
+                axios.delete(`http://localhost:3000/education/${id}`)
+                    .then(res => {
+                        if (res.status === 200) {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'ลบข้อมูลสำเร็จ',
+                                showConfirmButton: true,
+                                timer: 1500
+                            })
+                           getEducations();
+                        }
+                    })
+
+            }
+        })
+
+        setShow(false);
+
+    }
+
+
 
     const DeleteGroup = async (Id) => {
 
@@ -272,8 +314,9 @@ const Education = () => {
 
     }
 
-
-    const handelSubmitGroup = async () => {
+    //เพิ่มกลุ่มหัวข้อใหญ่
+    const handelSubmitGroup = async (event) => {
+        event.preventDefault();
         if (GroupId) {
             updateGroupId()
         } else {
@@ -282,9 +325,9 @@ const Education = () => {
 
     }
 
-    const handelSubmit = async () => {
-
-        //เพิ่มหัวข้อย่อยใน กลุ่ม 
+    const handelSubmit = async (event) => {
+        event.preventDefault();
+        //เพิ่มหัวข้อย่อยใน กลุ่มใหญ่ 
         if (itemId) {
             updateItem()
         } else {
@@ -338,7 +381,7 @@ const Education = () => {
                 setDetail(res.data)
             });
 
-                setShowDetail(true);
+        setShowDetail(true);
     };
 
 
@@ -361,15 +404,15 @@ const Education = () => {
     }, [educationTopic])
 
     useEffect(() => {
-        console.log('update detail',detail)
+        console.log('update detail', detail)
     }, [counter])
 
     return (
         <>
             <Container fluid>
                 <Row className="mb-4">
-
-                    <Col sm={12}>
+                    <Col sm={2}></Col>
+                    <Col sm={8}>
                         <Row className="mt-4">
 
                             <Col sm={4}>
@@ -438,7 +481,7 @@ const Education = () => {
 
                                                     <TableCell component="th" scope="row">
 
-                                                        <Button variant="danger" onClick={() => DeleteItemId(row.id)}>ลบ</Button>
+                                                        <Button variant="danger" onClick={() => DeleteEducation(row.educationId)}>ลบ</Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
@@ -554,7 +597,7 @@ const Education = () => {
 
                         </TableContainer>
                     </Col>
-
+                    <Col sm={2}></Col>
                 </Row>
 
                 <Modal
@@ -567,52 +610,56 @@ const Education = () => {
                         <Modal.Title> {itemId ? 'แก้ไขข้อมูล' : 'เพิ่มข้อมูลความสอดคล้อง'} </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form >
+                        <Form onSubmit={handelSubmit}>
 
                             {
                                 itemId === "" && (
-
-
                                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                         <Form.Label>เลือกกลุ่มของข้อมูล</Form.Label>
                                         <Select
                                             onChange={onSelectEducationTopic}
                                             options={option}
                                             value={educationTopic}
-
-
+                                            required
                                         />
-
-
-
                                     </Form.Group>
                                 )
                             }
+
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                                 <Form.Label>ชื่อเรื่อง</Form.Label>
                                 <Form.Control
                                     onChange={(e) => setName(e.target.value)}
                                     type="text"
                                     placeholder="ตัวอย่าง ทักษะศตวรรษที่ 21"
-                                    value={name} required />
+                                    value={name}
+                                    required />
                             </Form.Group>
+
+                            <Row>
+                                <Col sm={6}>
+                                    <Button variant="success"
+                                        type="submit"
+                                    >
+
+                                        <SaveIcon /> {' '}
+                                        {itemId ? "แก้ไข" : "บันทึกข้อมูล"}
+                                    </Button>
+                                </Col>
+                                <Col sm={6}>
+                                    <Button
+                                        className="btn-cancel"
+                                        onClick={() => handleClose()}
+                                        variant="danger"> <CancelIcon /> ยกเลิก
+                                    </Button>
+                                </Col>
+                            </Row>
 
 
 
                         </Form>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary"
 
-                            onClick={() => handelSubmit()}
-                        >
-
-                            {itemId ? "แก้ไข" : "บันทึกข้อมูล"}
-                        </Button>
-                        <Button
-                            onClick={() => handleClose()}
-                            variant="primary">ยกเลิก</Button>
-                    </Modal.Footer>
                 </Modal>
 
                 <Modal
@@ -623,14 +670,12 @@ const Education = () => {
                     keyboard={false}
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title> {GroupId ? "แก้ไขข้อมูลกลุ่ม" : "เพิ่มกลุ่มข้อมูล"}   </Modal.Title>
+                        <Modal.Title> {GroupId ? "แก้ไขข้อมูล" : "เพิ่มกลุ่มข้อมูลความสอดคล้อง"}   </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form >
+                        <Form onSubmit={handelSubmitGroup} >
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-
                                 <Form.Label>กลุ่มของข้อมูล</Form.Label>
-
                                 <Form.Control
                                     onChange={(e) => setNameGroup(e.target.value)}
                                     type="text"
@@ -638,22 +683,28 @@ const Education = () => {
                                     value={nameGroup}
                                     required />
                             </Form.Group>
+                            <Row>
+                                <Col sm={6}>
+                                    <Button
+                                        variant="success"
+                                        type="submit"
+                                    >
+                                        <SaveIcon /> {' '}
+                                        บันทึกข้อมูล
+                                    </Button>
+                                </Col>
+                                <Col sm={6}>
+                                    <Button
+                                        className="btn-cancel"
+                                        onClick={() => handleCloseGroup()}
+                                        variant="danger"> <CancelIcon /> ยกเลิก</Button>
+                                </Col>
+                            </Row>
+
 
                         </Form>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="success"
 
-                            onClick={() => handelSubmitGroup()}
-                        >
-
-                            บันทึกข้อมูล
-                        </Button>
-                        <Button
-                            onClick={() => handleCloseGroup()}
-                            variant="primary">ยกเลิก</Button>
-                    </Modal.Footer>
                 </Modal>
 
                 <Modal
@@ -672,9 +723,9 @@ const Education = () => {
 
                                     <Form.Group>
                                         <Form.Label>ชื่อเรื่อง</Form.Label>
-                                        <Form.Control type="text" 
-                                        defaultValue={title}  
-                                        onChange={(e)=>setTitle(e.target.value)}  />
+                                        <Form.Control type="text"
+                                            defaultValue={title}
+                                            onChange={(e) => setTitle(e.target.value)} />
                                     </Form.Group>
                                 </Col>
                                 <Col>
@@ -692,14 +743,16 @@ const Education = () => {
                             <Row>
                                 <Form.Label className="mt-4">คำตอบทั้งหมด</Form.Label>
                                 {
-                                    detail.map((ans,index) => {
+                                    detail.map((ans, index) => {
                                         return (<>
-                                            <Col sm={12} className="text-left mb-2 mt-2">
+                                            <Col sm={12}
+                                                key={ans.educationdetailId}
+                                                className="text-left mb-2 mt-2">
                                                 <Form.Group>
-                                                    
-                                                    <Form.Control type="text" 
-                                                    defaultValue={ans.answer}  
-                                                    onChange={(e)=>updateAwnser(index,e.target.value)} />
+
+                                                    <Form.Control type="text"
+                                                        defaultValue={ans.answer}
+                                                        onChange={(e) => updateAwnser(index, e.target.value)} />
                                                 </Form.Group>
                                             </Col>
                                         </>)
@@ -711,11 +764,11 @@ const Education = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="success"
-                            form="save"
-                            onClick={()=>updateEducationDetail()}    
+
+                            onClick={() => updateEducationDetail()}
                         >
 
-                            แก้ไขข้อมูล
+                            บันทึกข้อมูล
                         </Button>
                         <Button
                             onClick={() => handleCloseDetail()}
