@@ -16,6 +16,7 @@ const Education = () => {
     const [showGroup, setShowGroup] = useState(false);
     const [showDetail, setShowDetail] = useState(false);
     const [title, setTitle] = useState("");
+    const [counter, setCounter] = useState(0);
 
 
     const [getOne, setGetone] = useState([]);
@@ -26,6 +27,9 @@ const Education = () => {
     //education
     const [data, setData] = useState([]);
     const [detail, setDetail] = useState([]);
+    const [gname, setGname] = useState("");
+    const [eId, setEId] = useState("");
+
 
     const [selectedValue, setSelectedValue] = useState("");
 
@@ -35,7 +39,7 @@ const Education = () => {
     const [nameGroup, setNameGroup] = useState("");
 
     const [itemId, setItemID] = useState("");
-    const [forUpdateGroup, setforUpdateGroup] = useState("");
+
     const [GroupId, setGroupId] = useState("");
     const [selectTable, setSelectTable] = useState("");
 
@@ -53,10 +57,18 @@ const Education = () => {
           setShowDetail(false);
     }
 
+
     const handleShow = (id, name) => {
-          setItemID(id);
-          setName(name);
-          setShow(true);
+        setItemID(id);
+        setName(name);
+        setShow(true);
+    };
+
+
+    const handleShowGroup = (id, name) => {
+        setGroupId(id);
+        setNameGroup(name);
+        setShowGroup(true);
     };
 
 
@@ -89,17 +101,18 @@ const Education = () => {
         })
     }
 
+    //เลือกหัวข้อใหญ่ สำหรับแสดงข้อมูล
     const onSelectTopic = (event) => {
-        setSelectedValue(event);
-        getOneEducation(event.value);
-        setforUpdateGroup(event.label);
-        setGroupId(event.value);
+          setSelectedValue(event);
+          getOneEducation(event.value);  
+
     }
 
 
+    //เลือกหัวข้อจาดฟอร์มเพิ่มข้อมูล
     const onSelectEducationTopic = (event) => {
-        setEducationTopic(event);
-        setEducationId(event.value)
+          setEducationTopic(event);
+          setEducationId(event.value)
     }
 
 
@@ -115,13 +128,15 @@ const Education = () => {
                         showConfirmButton: true,
                         timer: 1500
                     })
-
+                    getAllEducation();
                 }
             })
     }
 
+
     const updateGroupId = async () => {
-        const body = { topic: forUpdateGroup }
+        handleCloseGroup();
+        const body = { topic: nameGroup }
         await axios.put(`http://localhost:3000/topics/updateGroup/${GroupId}`, body)
             .then(res => {
                 if (res.status === 200) {
@@ -135,7 +150,10 @@ const Education = () => {
                     getTopic();
                 }
             })
+
     }
+
+
 
     const addGroup = async () => {
         const body = { topic: nameGroup }
@@ -149,12 +167,40 @@ const Education = () => {
                         showConfirmButton: true,
                         timer: 1500
                     })
-
+                    getTopic();
                 }
             })
 
-        await getTopic();
+
         handleCloseGroup()
+    }
+
+    const updateAwnser = (index, value) => {
+        detail[index].answer = value;
+        setCounter(counter + 1);
+
+    };
+
+
+    const updateEducation = async()=>{
+        const body = {groupName:educationTopic.label,name:title}
+        await axios.put(`http//localhost:3000/${eId}`,body).then((res)=>{
+            if(res.status === 200){
+                alert("แก้ไขข้อมูลสำเร็จ")
+            }
+        })
+    }
+
+    const updateEducationDetail = async ()=>{
+
+          detail.map((item)=>{
+            let body ={answer:item.answer};        
+            axios.put(`http//localhost:3000/education/detail/${item.educationdetailId}`,body)
+            })
+
+          updateEducation();  
+          handleCloseDetail()
+
     }
 
 
@@ -180,10 +226,10 @@ const Education = () => {
                                 showConfirmButton: true,
                                 timer: 1500
                             })
-
+                            getAllEducation();
                         }
                     })
-                getAllEducation();
+
             }
         })
 
@@ -214,24 +260,31 @@ const Education = () => {
                                 timer: 1500
                             })
 
+                            getTopic();
                         }
                     })
 
             }
         })
 
-        await getAllEducation();
+
         setShow(false);
 
     }
 
 
     const handelSubmitGroup = async () => {
-        addGroup();
+        if (GroupId) {
+            updateGroupId()
+        } else {
+            addGroup();
+        }
+
     }
 
     const handelSubmit = async () => {
 
+        //เพิ่มหัวข้อย่อยใน กลุ่ม 
         if (itemId) {
             updateItem()
         } else {
@@ -266,24 +319,27 @@ const Education = () => {
 
 
     const getEducations = async () => {
-        await axios .get("http://localhost:3000/education")
+        await axios.get("http://localhost:3000/education")
             .then((res) => {
                 setData(res.data);
             });
     };
 
 
-    const getDetail = (id,title) => {
+    const getDetail = (id, title, groupnam) => {
+
+        setEId(id);
+        setEducationTopic([{ label: groupnam, value: groupnam }])
         setTitle(title);
-        axios.get(`http://localhost:3000/education/educationOne/${id}`
-            )
+        setGname(groupnam);
+
+        axios.get(`http://localhost:3000/education/educationOne/${id}`)
             .then((res) => {
                 setDetail(res.data)
             });
 
-            setShowDetail(true);
+                setShowDetail(true);
     };
-
 
 
     useEffect(() => {
@@ -299,6 +355,14 @@ const Education = () => {
     useEffect(() => {
 
     }, [option])
+
+    useEffect(() => {
+        console.log(educationTopic)
+    }, [educationTopic])
+
+    useEffect(() => {
+        console.log('update detail',detail)
+    }, [counter])
 
     return (
         <>
@@ -351,7 +415,7 @@ const Education = () => {
                                         </TableHead>
 
                                         <TableBody>
-                                            {data.map((row) => (
+                                            {data?.map((row) => (
                                                 <TableRow
                                                     key={row.id}
                                                 >
@@ -366,11 +430,14 @@ const Education = () => {
                                                     </TableCell>
 
                                                     <TableCell component="th" scope="row">
-                                                        <Button onClick={()=>getDetail(row.educationId,row.name)} >รายละเอียด</Button>
+                                                        <Button
+                                                            onClick={() => getDetail(row.educationId, row.name, row.groupName)}>
+                                                            รายละเอียด
+                                                        </Button>
                                                     </TableCell>
 
                                                     <TableCell component="th" scope="row">
-                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
+
                                                         <Button variant="danger" onClick={() => DeleteItemId(row.id)}>ลบ</Button>
                                                     </TableCell>
                                                 </TableRow>
@@ -415,7 +482,7 @@ const Education = () => {
                                         </TableHead>
 
                                         <TableBody>
-                                            {getOne.map((row) => (
+                                            {getOne?.map((row) => (
                                                 <TableRow
                                                     key={row.id}
 
@@ -460,7 +527,7 @@ const Education = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {topics.map((row) => (
+                                            {topics?.map((row) => (
                                                 <TableRow
                                                     key={row.id}
 
@@ -473,7 +540,7 @@ const Education = () => {
                                                         {row.topic}
                                                     </TableCell>
                                                     <TableCell component="th" scope="row">
-                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShow(row.id, row.topic)}>แก้ไข</Button> {' '}
+                                                        <Button variant="warning" style={{ color: '#fff' }} onClick={() => handleShowGroup(row.id, row.topic)}>แก้ไข</Button> {' '}
                                                         <Button variant="danger" onClick={() => DeleteGroup(row.id)}>ลบ</Button>
                                                     </TableCell>
 
@@ -536,7 +603,7 @@ const Education = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary"
-                            form="save"
+
                             onClick={() => handelSubmit()}
                         >
 
@@ -556,12 +623,14 @@ const Education = () => {
                     keyboard={false}
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title> เพิ่มกลุ่มข้อมูล </Modal.Title>
+                        <Modal.Title> {GroupId ? "แก้ไขข้อมูลกลุ่ม" : "เพิ่มกลุ่มข้อมูล"}   </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form >
                             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+
                                 <Form.Label>กลุ่มของข้อมูล</Form.Label>
+
                                 <Form.Control
                                     onChange={(e) => setNameGroup(e.target.value)}
                                     type="text"
@@ -573,8 +642,9 @@ const Education = () => {
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary"
-                            form="save"
+                        <Button
+                            variant="success"
+
                             onClick={() => handelSubmitGroup()}
                         >
 
@@ -593,32 +663,56 @@ const Education = () => {
                     keyboard={false}
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title> {title}</Modal.Title>
+                        <Modal.Title>รายละเอียดความสอดคล้อง</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Row>
-                            {
-                                detail.map((ans) => {
-                                    return (<>
-                                        <Col sm={12} className="text-left mb-4">
-                                            <Form>
+                        <Form>
+                            <Row>
+                                <Col sm={12}>
 
+                                    <Form.Group>
+                                        <Form.Label>ชื่อเรื่อง</Form.Label>
+                                        <Form.Control type="text" 
+                                        defaultValue={title}  
+                                        onChange={(e)=>setTitle(e.target.value)}  />
+                                    </Form.Group>
+                                </Col>
+                                <Col>
 
-                                           
-                                            <Form.Group>
-                                                <Form.Control type="text"  defaultValue={ans.answer} />
-                                            </Form.Group>
-                                            </Form>
-                                        </Col>
-                                    </>)
-                                })
-                            }
-                        </Row>
+                                    <Form.Group sm={12} className="mt-2">
+                                        <Form.Label>กลุ่ม</Form.Label>
+                                        <Select
+                                            onChange={onSelectEducationTopic}
+                                            options={option}
+                                            value={educationTopic}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Form.Label className="mt-4">คำตอบทั้งหมด</Form.Label>
+                                {
+                                    detail.map((ans,index) => {
+                                        return (<>
+                                            <Col sm={12} className="text-left mb-2 mt-2">
+                                                <Form.Group>
+                                                    
+                                                    <Form.Control type="text" 
+                                                    defaultValue={ans.answer}  
+                                                    onChange={(e)=>updateAwnser(index,e.target.value)} />
+                                                </Form.Group>
+                                            </Col>
+                                        </>)
+                                    })
+                                }
+
+                            </Row>
+                        </Form>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="success"
                             form="save"
-                          
+                            onClick={()=>updateEducationDetail()}    
                         >
 
                             แก้ไขข้อมูล
