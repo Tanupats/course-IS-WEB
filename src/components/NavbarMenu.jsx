@@ -17,7 +17,7 @@ const NavbarMenu = () => {
   const { isLogin,setIsLogin } = useContext(AuthData);
 
   const Logout = () => {
-    setIsLogin(false);
+    setIsLogin("no");
     localStorage.clear();
   }
   

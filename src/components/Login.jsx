@@ -105,13 +105,13 @@ const Login = () => {
                         className=" w-100 mt-2">
                         เข้าสู่ระบบ
                       </Button>
-                      <hr />
+                      {/* <hr />
                           ยังไม่มีบัญชี คลิกลงทะเบียน
                       <Button
                         type="submit"
                         className=" w-100 mt-2">
                         ลงทะเบียน
-                      </Button>
+                      </Button> */}
                     </Form>
                   </Col>
                 </Row>

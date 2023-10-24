@@ -97,14 +97,14 @@ const FormPlos = (props) => {
 
                                         <div className="anwser mt-4">
                                             <Row>
-                                                {data.anwsers.map((item, index) => {
+                                                {data?.anwsers?.map((item, index) => {
                                                     return (
                                                         <>
                                                             <Col sm={5}>
                                                                 <Form.Group>
                                                                     <Form.Label>
                                                                         {" "}
-                                                                        ข้อที่ {index + 1}
+                                                                      
                                                                     </Form.Label>
                                                                     <Form.Control
                                                                         type="text"
@@ -125,12 +125,12 @@ const FormPlos = (props) => {
                                                             </Col>
                                                             <Col sm={1}>
                                                                 <div
-                                                                    style={{marginTop:'46px'}}
+                                                                    style={{marginTop:'38px'}}
                                                                     onClick={() =>
                                                                         props.deleteAnswerFil(indexp, item.Id)
                                                                     }
                                                                 >
-                                                                    <DeleteIcon />
+                                                                    <DeleteIcon  style={{color:'#333333'}}/>
                                                                 </div>
                                                             </Col>
                                                         </>

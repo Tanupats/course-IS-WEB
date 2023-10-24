@@ -4,12 +4,11 @@ import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
-
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { Link } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
+
 import PersonIcon from '@mui/icons-material/Person';
 import FormPlos from "./FormPlos";
 const Admin = () => {
@@ -72,7 +71,7 @@ const Admin = () => {
           ...topicsData,
           {
             title: topicName,
-            anwsers: [{ list: "" }, { list: "" }, { list: "" }],
+            anwsers: [{ list: "",Id:1 }, { list: "",Id:2 }, { list: "",Id:3 }],
           },
         ]);
       }
@@ -145,18 +144,19 @@ const Admin = () => {
     if (name === "บันทึกส่วนประกอบของหลักสูตร") {
       setLerningName("PLOs");
       addPOLdata("PLOs");
+      setFormName(name)
     }
-    else{
-       setTopicData([]);
-       setFormName(name);
-       getSubtopics(id);
+    else {
+      setTopicData([]);
+      setFormName(name);
+      getSubtopics(id);
     }
-   
+
   };
 
   const addAwnser = (index) => {
     console.log(topicsData[index].anwsers);
-    let newID = 'randId';
+    let newID = Math.floor(Math.random() * 100);
 
     topicsData[index].anwsers.push({ list: "", Id: newID });
     setCounter(counter + 1);
@@ -323,8 +323,8 @@ const Admin = () => {
 
   useEffect(() => {
 
-   }, [counter]
-   );
+  }, [counter]
+  );
 
   return (
     <>
@@ -463,21 +463,33 @@ const Admin = () => {
                                     <Row>
                                       {data.anwsers.map((item, index) => {
                                         return (
-                                          <Col sm={4} className="d-flex">
-                                            <Form.Control
-                                              type="text"
-                                              placeholder="กรกอกข้อมูล"
-                                              className="mt-2"
-                                              defaultValue={item.list}
-                                              onChange={(e) =>
-                                                updateAwnser(
-                                                  indexp,
-                                                  index,
-                                                  e.target.value
-                                                )
-                                              }
-                                            />
-                                          </Col>
+                                          <>
+                                            <Col sm={5} className="d-flex">
+                                              <Form.Control
+                                                type="text"
+                                                placeholder="กรกอกข้อมูล"
+                                                className="mt-2"
+                                                defaultValue={item.list}
+                                                onChange={(e) =>
+                                                  updateAwnser(
+                                                    indexp,
+                                                    index,
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </Col>
+                                            <Col sm={1}>
+                                              <div
+                                                style={{ marginTop: '12px' }}
+                                                onClick={() =>
+                                                 deleteAnswerFil(indexp, item.Id)
+                                                }
+                                              >
+                                                <DeleteIcon />
+                                              </div>
+                                            </Col>
+                                          </>
                                         );
                                       })}
                                     </Row>

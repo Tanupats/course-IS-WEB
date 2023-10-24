@@ -7,10 +7,12 @@ const Home = () => {
     <Container>
       <Row className="mt-4 text-center">
 
-            <Col className="mt-4" > 
-            <h1>ยินดีต้อนรับเข้าสู่ ระบบจัดทำหลักสูตร</h1>
-
-            <Button onClick={()=>{ navigate('/login') }}>เข้าสู่ระบบ</Button>
+            <Col className="mt-4 mb-4" > 
+            <h1 className="mb-4">ยินดีต้อนรับเข้าสู่ ระบบจัดทำหลักสูตร</h1>
+              <div className="cover" >
+                <Image style={{width:'100%'}}  src="./src/assets/Nkc_86011713544421.jpg"/>
+              </div>
+            <Button style={{width:'300px',marginTop:'60px'}}   onClick={()=>{ navigate('/login') }}>เข้าสู่ระบบ</Button>
             </Col>
             
        
