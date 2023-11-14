@@ -3,54 +3,42 @@ import { Col, Row, Form, Button, Image, Card,Alert } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthData } from "../AuthContext";
-const Login = () => {
-  const { setIsLogin } = useContext(AuthData);
+
+const Register = () => {
+  
   const navigae = useNavigate();
 
+  const [file, setFile] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMsg,setErrorMsg] = useState("");
 
   const handelSubmit = async (event) => {
     event.preventDefault();
-    if (email !== "" && password !== "") {
-        const body = {
-        email: email,
-        password: password,
-        systemName:"course"
-      };
 
-      await axios
-        .post(
-          "http://localhost:3000/users/login",
-          body
-        )
+        let formData = new FormData();
+
+        formData.append("photo", file);
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("systemName", "course");
+        formData.append("role", "admin");
+
+      await axios.post("http://localhost:3000/users",formData)
         .then(res => {
 
-            console.log(res.data.length)
-          if(res.data.length===0){
-            setErrorMsg("เข้าสูระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง")
-          }
-
-          if (res.status === 200) {
-            localStorage.setItem("name", res.data[0].name);
-            localStorage.setItem("userId", res.data[0].userId);
-            localStorage.setItem("auth", "loginged");
-            setIsLogin("loginged");
-            localStorage.setItem("role", res.data[0].role);
-            localStorage.setItem("profile", res.data[0].profile);
-
-
-            if (res.data[0].role === "admin") {
-                navigae("/admin");
-            }
-
+          if (res.status === 200) {         
+             navigae("/login");      
           }
         })
 
-    }
+    
   };
+
+  useEffect(()=>{
+        console.log(file)
+  },[file])
 
   return (
     <div>
@@ -66,8 +54,8 @@ const Login = () => {
                     <center>
                       {" "}
                       <Image
-                        src="./src/assets/logo.jpg"
-                        style={{ width: "20%", height: "auto" }}
+                        src={ file ?  URL.createObjectURL(file) : ""  }
+                        style={{ width: "100px", height: "100px",borderRadius:"50px" }}
                       />
                     </center>
                   </Col>
@@ -77,8 +65,26 @@ const Login = () => {
 
                       onSubmit={handelSubmit}
                     >
-                      <h4 className="text-center"> เข้าสู่ระบบ</h4>
+                      <h4 className="text-center"> ลงทะเบียน</h4>
 
+                      <Form.Group className="mb-4">
+                        <Form.Label>อัพโหลดโปรไฟล์</Form.Label>
+                        <Form.Control
+                          type="file"
+                                       
+                          onChange={(e) => setFile(e.target.files[0])}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-4">
+                        <Form.Label>ชื่อ-นามสกุล</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={name}
+                          placeholder="ชื่อ"
+                          required
+                          onChange={(e) => setName(e.target.value)}
+                        />
+                      </Form.Group>
                       <Form.Group className="mb-4">
                         <Form.Label>อีเมล</Form.Label>
                         <Form.Control
@@ -101,26 +107,11 @@ const Login = () => {
                         />
                       </Form.Group>
 
-                        {
-                          errorMsg !== "" && (
-                            <Alert variant="danger" className="mt-4">
-                             <div className="text-center">
-                               {errorMsg} </div> 
-                            </Alert>
-                          )
-                        }
+                    
+                    
                       <Button
-                        variant="success"
                         type="submit"
-                        className=" w-100 mt-2">
-                        เข้าสู่ระบบ
-                      </Button>
-                      <hr />
-                          ยังไม่มีบัญชี คลิกลงทะเบียน
-                      <Button
-                        onClick={()=>navigae('/register')}
-                        type="submit"
-                        className=" w-100 mt-2">
+                        className=" w-100 mt-4">
                         ลงทะเบียน
                       </Button>
                     </Form>
@@ -136,4 +127,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -12,13 +12,14 @@ import MindMapping from "./MindMapping";
 import { AuthData } from "../AuthContext";
 import Education from "./Education";
 import Filedocs from "./Filedocs"
+import Register from "./Register";
 const NavbarMenu = () => {
 
   const { isLogin,setIsLogin } = useContext(AuthData);
 
   const Logout = () => {
-    setIsLogin("no");
-    localStorage.clear();
+    setIsLogin("nologin");
+    localStorage.setItem("name","")
   }
   
   return (
@@ -31,7 +32,7 @@ const NavbarMenu = () => {
           <Navbar.Brand>
             {" "}
             <Image
-              src="./src/assets/logo.jpg"
+              src="logo.jpg"
               style={{ width: "50px", height: "50px", borderRadius: '50%', marginLeft: '12px', objectFit: "cover" }}
             />{" "}
           </Navbar.Brand>
@@ -102,6 +103,7 @@ const NavbarMenu = () => {
           <Route path="/Mindmap" Component={MindMapping}></Route>
           <Route path="/education" Component={Education}></Route>
           <Route path="/file-docs" Component={Filedocs}></Route>
+          <Route path="/register" Component={Register}></Route>
         </Routes>
       </Router>
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Container, Card, Button, Form, Modal, Alert } from "react-bootstrap";
+import { Col, Row, Container, Card, Button, Form, Modal, Alert, ButtonGroup } from "react-bootstrap";
 import axios from "axios";
 import "../index.css";
 import Swal from "sweetalert2";
@@ -11,15 +11,27 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 const Filedocs = () => {
+
+  const [docFilter, setDocFilter] = useState("docs");
   const [data, setData] = useState([]);
   const [show, setShow] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
 
+  //upload new file
   const [file, setFile] = useState("");
+
   const [name, setName] = useState("");
   const [detail, setDetail] = useState("");
+
+
   const [filePath, setFilePath] = useState("");
+
+
+  //for update 
   const [Id, setId] = useState("");
+  const [nameUpdate, setNameUpdate] = useState("");
+  const [detailUpdate, setDetailUpdate] = useState("");
+
 
   const handleClose = () => {
     setFilePath("")
@@ -28,7 +40,6 @@ const Filedocs = () => {
 
   const handleCloseUpdate = () => {
     setShowUpdate(false);
-
   }
 
   const handleShow = (path) => {
@@ -39,13 +50,13 @@ const Filedocs = () => {
   const handleShowUpdate = (item) => {
     setId(item.Id)
     setFilePath(item.filePath)
-    setName(item.name)
-    setDetail(item.detail)
+    setNameUpdate(item.name)
+    setDetailUpdate(item.detail)
     setShowUpdate(true);
   }
 
   const getData = async () => {
-    await axios.get("http://localhost:3000/document").then((res) => {
+    await axios.get(`http://localhost:3000/document/${docFilter}`).then((res) => {
       setData(res.data);
     });
   };
@@ -82,21 +93,42 @@ const Filedocs = () => {
     formData.append("photo", file);
     formData.append("detail", detail);
 
-    await axios
-      .post("http://localhost:3000/document/updatefile/" + Id, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "แก้ไขข้อมูลสำเร็จ",
-            showConfirmButton: true,
-          });
+    if (docFilter === "docs" || docFilter ==="image") {
+      await axios
+        .post("http://localhost:3000/document/updatefile/" + Id, formData)
+        .then((res) => {
+          if (res.status === 200) {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "แก้ไขข้อมูลสำเร็จ",
+              showConfirmButton: true,
+            });
 
-        }
-      });
+          }
+        });
 
-    getData();
+    } 
+    
+    if (docFilter === "poster") {
+      await axios
+        .post("http://localhost:3000/poster/updatefile/" + Id, formData)
+        .then((res) => {
+          if (res.status === 200) {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "แก้ไขข้อมูลสำเร็จ",
+              showConfirmButton: true,
+            });
+
+          }
+        });
+
+    }
+
+
+ 
     handleCloseUpdate();
   };
 
@@ -132,6 +164,9 @@ const Filedocs = () => {
   useEffect(() => {
     getData();
   }, []);
+  useEffect(() => {
+    getData();
+  }, [docFilter]);
 
   return (
     <>
@@ -144,7 +179,7 @@ const Filedocs = () => {
 
             <Form onSubmit={uploadFile}>
               <Row>
-                <Col sm={4}>
+                <Col sm={6}>
 
                   <Form.Group>
 
@@ -157,7 +192,7 @@ const Filedocs = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col sm={4}>
+                <Col sm={6}>
                   <Form.Group>
 
                     <Form.Control
@@ -169,9 +204,25 @@ const Filedocs = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col sm={2}>
-                  <Form.Group>
+                <Col sm={6} className="mt-4">
 
+                  <Form.Group>
+                    <Form.Label>
+                      เลือกประเภทของไฟล์
+                    </Form.Label>
+                    <ButtonGroup aria-label="Basic example" className="w-100">
+                      <Button onClick={() => setDocFilter("poster")} variant="secondary">POSTER</Button>
+                      <Button onClick={() => setDocFilter("docs")} variant="secondary">DOCS</Button>
+                      <Button onClick={() => setDocFilter("image")} variant="secondary">IMAGE</Button>
+                    </ButtonGroup>
+
+                  </Form.Group>
+                </Col>
+                <Col sm={6} className="mt-4">
+                  <Form.Group>
+                  <Form.Label>
+                      อัพโหลดไฟล์
+                    </Form.Label>
                     <Form.Control
                       required
                       type="file"
@@ -180,10 +231,12 @@ const Filedocs = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col sm={2}>
+
+                <Col sm={12}>
                   <Form.Group>
                     <Button
-                      className="w-100"
+                      variant="success"
+                      className="w-100 mt-4"
                       style={{ marginTop: '0px' }}
                       type="submit">
                       <FileUploadIcon />  อัพโหลดไฟล์
@@ -196,6 +249,9 @@ const Filedocs = () => {
             {
               data.length > 0 && (
                 <Row style={{ marginTop: '40px' }}>
+                  <h5>
+                    {docFilter}
+                  </h5>
                   {data?.map((item) => {
                     return (
                       <>
@@ -206,8 +262,9 @@ const Filedocs = () => {
                                 <Col sm={12} onClick={() => handleShow(item.filePath)}>
 
                                   <div className="icon-docs" >
-                                    <FolderIcon style={{ fontSize: '20vh', color: '#4c5cab' }} />
-                                  </div>
+
+
+                                    <PreviewFile filePath={item.filePath} /> </div>
                                   <h5 className="mt-2">  {item.name}</h5>
                                   <span> {item.detail}</span>
                                 </Col>
@@ -266,7 +323,7 @@ const Filedocs = () => {
           </Modal.Header>
           <Modal.Body>
 
-            <Form >
+            <Form onSubmit={() => UpdateFileId()}>
               <Row>
                 <Col sm={4}>
                   <Form.Group>
@@ -274,8 +331,8 @@ const Filedocs = () => {
                     <Form.Control
                       type="text"
                       placeholder="ชื่อไฟล์"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={nameUpdate}
+                      onChange={(e) => setNameUpdate(e.target.value)}
                       required
                     />
                   </Form.Group>
@@ -287,8 +344,8 @@ const Filedocs = () => {
                       required
                       placeholder="รายละเอียด"
                       type="text"
-                      value={detail}
-                      onChange={(e) => setDetail(e.target.value)}
+                      value={detailUpdate}
+                      onChange={(e) => setDetailUpdate(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
@@ -305,19 +362,18 @@ const Filedocs = () => {
                 </Col>
 
               </Row>
+              <Button variant="success" type="submit">
+                บันทึก
+              </Button> <Button variant="danger" onClick={handleCloseUpdate}>
+                <ClearIcon />     ยกเลิก
+              </Button>
             </Form>
 
 
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="success" onClick={() => UpdateFileId()}>
-              บันทึก
-            </Button>
-            <Button variant="danger" onClick={handleCloseUpdate}>
-              <ClearIcon />     ปิด
-            </Button>
-          </Modal.Footer>
+
         </Modal>
+
       </Container>
     </>
   );

@@ -4,8 +4,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Select from "react-select";
 import DeleteIcon from '@mui/icons-material/Delete';
 const FormPlos = (props) => {
-    const { topicsData, ylos, plos, yloValue, ploValue } = props;
-
+    const { topicsData, ylos, plos, yloValue, ploValue,setFile } = props;
+    
     return (
         <>
             <Form >
@@ -73,6 +73,7 @@ const FormPlos = (props) => {
                                                         />
                                                     </Form.Group>
                                                 )}
+
                                                 {data.title === "YLOs" && (
                                                     <Form.Group className="mt-4">
                                                         <Form.Label>
@@ -85,14 +86,28 @@ const FormPlos = (props) => {
                                                     </Form.Group>
                                                 )}
 
-                                                <Button
-                                                    variant="light mt-4"
-                                                    onClick={() => props.addAwnser(indexp)}
-                                                >
-                                                    {" "}
-                                                    + เพิ่มช่องคำตอบ
-                                                </Button>
+                                                <Row className="mt-2">
+                                                    <Col>
+                                                        <Button
+                                                            variant="light mt-4"
+                                                            onClick={() => props.addAwnser(indexp)}
+                                                        >
+                                                            {" "}
+                                                            + เพิ่มช่องคำตอบ
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Form>
+                                                            <Form.Label>แนบไฟล์เพิ่มเติม</Form.Label>
+                                                            <Form.Control type="file"   
+                                                            onChange={(e)=>setFile(e.target.files[0])}/>
+                                                        </Form>
+                                                    </Col>
+                                                </Row>
+
+
                                             </Col>
+
                                         </Row>
 
                                         <div className="anwser mt-4">
@@ -104,7 +119,7 @@ const FormPlos = (props) => {
                                                                 <Form.Group>
                                                                     <Form.Label>
                                                                         {" "}
-                                                                      
+
                                                                     </Form.Label>
                                                                     <Form.Control
                                                                         type="text"
@@ -125,12 +140,12 @@ const FormPlos = (props) => {
                                                             </Col>
                                                             <Col sm={1}>
                                                                 <div
-                                                                    style={{marginTop:'38px'}}
+                                                                    style={{ marginTop: '38px' }}
                                                                     onClick={() =>
                                                                         props.deleteAnswerFil(indexp, item.Id)
                                                                     }
                                                                 >
-                                                                    <DeleteIcon  style={{color:'#333333'}}/>
+                                                                    <DeleteIcon style={{ color: '#333333' }} />
                                                                 </div>
                                                             </Col>
                                                         </>

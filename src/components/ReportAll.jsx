@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Container, Card } from "react-bootstrap";
+import { Col, Row, Container, Card,Button } from "react-bootstrap";
 import axios from "axios";
 import EdcationDetail from "./EducationDetail";
 import '../index.css'
+import PreviewFile from "./PreviewFile";
 const ReportAll = () => {
 
   const [data, setData] = useState([]);
@@ -16,7 +17,7 @@ const ReportAll = () => {
       });
   };
 
-
+ 
   useEffect(() => {
     getData();
   }, []);
@@ -28,7 +29,7 @@ const ReportAll = () => {
          
             <Col sm={12} className="text-center" style={{ marginTop: "30px" }}>
               <div className="text-center mt-4 mb-4">
-                <h5>สรุปความสอดคล้องการศึกษา</h5>
+                <h5>สรุปความสอดทั้งหมด</h5>
               </div>
 
               <Row>
@@ -53,9 +54,9 @@ const ReportAll = () => {
                       
                           <h5> {data.name}</h5>
       
-
-                         <EdcationDetail id={data.educationId}/>
-                        
+                          <PreviewFile id={data.educationId}/>
+                          <EdcationDetail id={data.educationId}/>
+                          <Button>Sourse</Button>
                         </Card>
                       </Col>
                     </>
