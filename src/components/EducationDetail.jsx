@@ -9,7 +9,7 @@ const EdcationDetail = (props) => {
 
         axios
             .get(
-                `https://mysql-deploy-8293b2207e7e.herokuapp.com/education/educationOne/${id}`
+                `${import.meta.env.VITE_BASE_URL}/education/educationOne/${id}`
             )
             .then((res) => {
                 setData(res.data)

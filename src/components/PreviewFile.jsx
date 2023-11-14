@@ -8,7 +8,7 @@ const PreviewFile = (props) => {
 
     const getFile = ()=>{
 
-      axios.get(`http://localhost:3000/document/${id}`)
+      axios.get(`${import.meta.env.VITE_BASE_URL}/document/${id}`)
       .then(res=>{  
          setSrc(res.data[0].filePath)    
       })
@@ -24,7 +24,7 @@ const PreviewFile = (props) => {
     <>
       <DocViewer
         style={{height:'500px'}}
-        documents={[{ uri: "http://localhost:3000/" +src }]}
+        documents={[{ uri:`${import.meta.env.VITE_BASE_URL}/${src}`}]}
         pluginRenderers={DocViewerRenderers}
       />
     </>

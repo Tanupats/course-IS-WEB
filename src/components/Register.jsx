@@ -25,7 +25,7 @@ const Register = () => {
         formData.append("systemName", "course");
         formData.append("role", "admin");
 
-      await axios.post("http://localhost:3000/users",formData)
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/users`,formData)
         .then(res => {
 
           if (res.status === 200) {         

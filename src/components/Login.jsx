@@ -23,7 +23,7 @@ const Login = () => {
 
       await axios
         .post(
-          "http://localhost:3000/users/login",
+          `${import.meta.env.VITE_BASE_URL}/users/login`,
           body
         )
         .then(res => {

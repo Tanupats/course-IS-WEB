@@ -7,17 +7,19 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { Link, useNavigate } from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import FormPlos from "./FormPlos";
-import ClearIcon from '@mui/icons-material/Clear';
+import ClearIcon from "@mui/icons-material/Clear";
 
 const Admin = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   if (localStorage.getItem("name") === "") {
-    navigate("/login")
+    navigate("/login");
   }
 
-  const [formName, setFormName] = useState("บันทึกความสอดคล้องกับนโยบายหรือทิศทางการศึกษา");
+  const [formName, setFormName] = useState(
+    "บันทึกความสอดคล้องกับนโยบายหรือทิศทางการศึกษา"
+  );
   const [topicsMenu, settopicsMenu] = useState([]);
 
   const [optionToppics, setOptionToppics] = useState([]);
@@ -44,23 +46,22 @@ const Admin = () => {
 
   const getSubtopics = async (id) => {
     let subtopis = [];
-    await axios.get(`http://localhost:3000/topics/getOne/${id}`).then((res) => {
-      subtopis = res.data.map((data) => {
-        return { label: data.topic, value: data.topic };
+    await axios
+      .get(`${import.meta.env.VITE_BASE_URL}/topics/getOne/${id}`)
+      .then((res) => {
+        subtopis = res.data.map((data) => {
+          return { label: data.topic, value: data.topic };
+        });
+        setOptionToppics(subtopis);
       });
-      setOptionToppics(subtopis);
-    });
   };
 
   const addTopicData = () => {
-    const checkTitle = topicsData.filter((obj) => obj.title === topicName)
-    console.log('check', checkTitle)
-
-
+    const checkTitle = topicsData.filter((obj) => obj.title === topicName);
+    console.log("check", checkTitle);
 
     //ยังไม่ได้เลือกหัวข้อ
     if (topicName === "") {
-
       Swal.fire({
         position: "center",
         icon: "success",
@@ -69,40 +70,38 @@ const Admin = () => {
         timer: 1000,
       });
     } else {
-
-
       if (topicsData.length === 0) {
-
         setTopicData([
           ...topicsData,
           {
             title: topicName,
-            anwsers: [{ list: "", Id: 1 }, { list: "", Id: 2 }, { list: "", Id: 3 }],
+            anwsers: [
+              { list: "", Id: 1 },
+              { list: "", Id: 2 },
+              { list: "", Id: 3 },
+            ],
           },
         ]);
       }
 
       if (topicsData.length > 0) {
-
-
         if (checkTitle.length) {
-          alert('ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง')
-
+          alert("ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง");
         } else {
-
           setTopicData([
             ...topicsData,
             {
               title: topicName,
-              anwsers: [{ list: "", Id: 1 }, { list: "", Id: 2 }, { list: "", Id: 3 }],
+              anwsers: [
+                { list: "", Id: 1 },
+                { list: "", Id: 2 },
+                { list: "", Id: 3 },
+              ],
             },
           ]);
         }
       }
-
-
     }
-
   };
 
   // ลบกลุ่มหัวข้อใหญ่
@@ -113,7 +112,6 @@ const Admin = () => {
 
   // ลบช่องคำตอบ
   const deleteAnswerFil = (gindex, id) => {
-
     if (topicsData[gindex].anwsers.length > 1) {
       let result = topicsData[gindex].anwsers.filter((obj) => obj.Id !== id);
       topicsData[gindex].anwsers = result;
@@ -128,9 +126,7 @@ const Admin = () => {
         timer: 1000,
       });
     }
-
   };
-
 
   const addPOLdata = (title) => {
     setLerningName(title);
@@ -150,27 +146,23 @@ const Admin = () => {
     if (name === "บันทึกส่วนประกอบของหลักสูตร") {
       setLerningName("PLOs");
       addPOLdata("PLOs");
-      setFormName(name)
-    }
-    else {
+      setFormName(name);
+    } else {
       setTopicData([]);
       setFormName(name);
       getSubtopics(id);
     }
-
   };
 
- 
   const uploadFile = (id) => {
-    file.map(fileList => {
+    file.map((fileList) => {
       let formData = new FormData();
       formData.append("name", fileList.name);
       formData.append("photo", fileList);
       formData.append("detail", id);
-      axios.post("http://localhost:3000/document/upload", formData)
-    })
-
-  }
+      axios.post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData);
+    });
+  };
 
   const addAwnser = (index) => {
     console.log(topicsData[index].anwsers);
@@ -186,34 +178,31 @@ const Admin = () => {
     setCounter(counter + 1);
   };
 
-
   // บันทึกความสอดคล้อง
   const postData = () => {
     let id = "";
     if (topicsData.length > 0) {
       //post toppics
       topicsData.map((item) => {
-
-        //upload file this 
+        //upload file this
 
         let body = { name: item.title, groupName: formName };
         axios
-          .post("http://localhost:3000/education/add", body)
+          .post(`${import.meta.env.VITE_BASE_URL}/education/add`, body)
           .then((respone) => {
+            //education Id
             id = respone.data.id;
-
-            uploadFile(id)
-
 
             //detail
             item.anwsers.map((data) => {
               let body = { answer: data.list, educationId: id };
-              axios.post("http://localhost:3000/education/detail", body);
+              axios.post(`${import.meta.env.VITE_BASE_URL}/education/detail`, body);
             });
           });
       });
 
-      //upload file 
+      uploadFile(id);
+      //upload file
 
       Swal.fire({
         position: "center",
@@ -222,6 +211,7 @@ const Admin = () => {
         showConfirmButton: true,
         timer: 1500,
       });
+
       setTopicData([]);
     } else {
       Swal.fire({
@@ -234,52 +224,41 @@ const Admin = () => {
   };
 
 
-
-
   const postDataPlo = () => {
-    let id = "";
     if (lerningName === "PLOs") {
-
-      //uploads file doc 
-
       //post plos
       topicsData[0].anwsers.map((item) => {
         let body = { name: lerningName, answer: item.list };
-        axios.post("http://localhost:3000/education/addProgram", body)
+        axios
+          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
-
-            id = respone.data.id;
-
-            uploadFile(id);
-
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "บันทึกข้อมูล PLOs สำเร็จ",
-              showConfirmButton: true,
-              timer: 1500,
-            });
+            if (respone.status === 200) {
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "บันทึกข้อมูล PLOs สำเร็จ",
+                showConfirmButton: true,
+                timer: 1500,
+              });
+            }
           });
-
       });
 
-
-
-
+      
       setTopicData([]);
     } else if (lerningName === "CLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
         let body = { name: lerningName, answer: item.list };
         axios
-          .post("http://localhost:3000/education/addProgram", body)
+          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
             let id = respone.data.id;
 
             let body = { source: yloValue, target: id };
 
             //for connect node Ylo to clo
-            axios.post("http://localhost:3000/education/addDetail", body);
+            axios.post(`${import.meta.env.VITE_BASE_URL}/education/addDetail`, body);
           });
       });
 
@@ -290,20 +269,21 @@ const Admin = () => {
         showConfirmButton: true,
         timer: 1500,
       });
+
       setTopicData([]);
     } else if (lerningName === "YLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
         let body = { name: lerningName, answer: item.list };
         axios
-          .post("http://localhost:3000/education/addProgram", body)
+          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
-            let id = respone.data.id;
+            id = respone.data.id;
 
             let body = { source: ploValue, target: id };
 
             //for connect node Ylo to plo
-            axios.post("http://localhost:3000/education/addDetail", body);
+            axios.post(`${import.meta.env.VITE_BASE_URL}/education/addDetail`, body);
           });
       });
 
@@ -322,7 +302,7 @@ const Admin = () => {
   const getPLOs = async () => {
     let plos = [];
     await axios
-      .get("http://localhost:3000/education/getPlo/PLOs")
+      .get(`${import.meta.env.VITE_BASE_URL}/education/getPlo/PLOs`)
       .then((res) => {
         console.log(res.data);
         plos = res.data.map((item) => {
@@ -335,7 +315,7 @@ const Admin = () => {
   const getYLOs = async () => {
     let clos = [];
     await axios
-      .get("http://localhost:3000/education/getPlo/YLOs")
+      .get(`${import.meta.env.VITE_BASE_URL}/education/getPlo/YLOs`)
       .then((res) => {
         console.log(res.data);
         clos = res.data.map((item) => {
@@ -347,16 +327,14 @@ const Admin = () => {
   };
 
   const getTopics = async () => {
-    await axios.get("http://localhost:3000/topics").then((res) => {
+    await axios.get(`${import.meta.env.VITE_BASE_URL}/topics`).then((res) => {
       settopicsMenu(res.data);
     });
   };
 
-
   const handelUploadFiles = (e) => {
-    setFile((item) => [...item, e.target.files[0]])
-
-  }
+    setFile((item) => [...item, e.target.files[0]]);
+  };
 
   useEffect(() => {
     getSubtopics(1);
@@ -369,14 +347,10 @@ const Admin = () => {
     console.log(topicsData);
   }, [topicsData]);
 
+  useEffect(() => {}, [counter]);
   useEffect(() => {
-
-  }, [counter]
-  );
-  useEffect(() => {
-    console.log(file)
-  }, [file]
-  );
+    console.log(file);
+  }, [file]);
 
   return (
     <>
@@ -385,11 +359,20 @@ const Admin = () => {
           <Col sm={3} id="sidebar-wrapper">
             <Nav className="d-md-block  sidebar">
               <div className="text-center mb-4">
+                <Image
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    marginBottom: "12px",
+                  }}
+                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${localStorage.getItem(
+                    "profile"
+                  )}`}
+                />
 
-
-                <Image style={{ width: "60px", height: "60px", borderRadius: '50%', objectFit: "cover", marginBottom: "12px" }} src={`http://localhost:3000/uploads/${localStorage.getItem("profile")}`} />
-
-                <h5>  {localStorage.getItem("name")} </h5>
+                <h5> {localStorage.getItem("name")} </h5>
               </div>
 
               {topicsMenu.map((data) => {
@@ -450,8 +433,6 @@ const Admin = () => {
                   />
                 )}
 
-
-
                 {formName !== "บันทึกส่วนประกอบของหลักสูตร" && (
                   <Form>
                     <Row>
@@ -485,7 +466,6 @@ const Admin = () => {
                           </Button>
                         </Form.Group>
                       </Col>
-
                     </Row>
 
                     <div className="topic">
@@ -495,7 +475,6 @@ const Admin = () => {
                             <Col>
                               <Card>
                                 <Card.Body>
-
                                   <Row>
                                     <Col sm={4}>
                                       <Card.Title>{data.title}</Card.Title>
@@ -508,25 +487,31 @@ const Admin = () => {
                                     </Col>
                                     <Col sm={4}>
                                       <Form>
-                                        <Form.Label>แนบไฟล์เพิ่มเติม</Form.Label>
-                                        <Form.Control type="file"
-                                          onChange={(e) => handelUploadFiles(e)} />
+                                        <Form.Label>
+                                          แนบไฟล์เพิ่มเติม
+                                        </Form.Label>
+                                        <Form.Control
+                                          type="file"
+                                          onChange={(e) => handelUploadFiles(e)}
+                                        />
                                       </Form>
-
                                     </Col>
 
                                     <Col sm={4}>
                                       <Button
-
                                         variant="light"
                                         onClick={() => deleteToppic(data.title)}
                                         style={{ float: "right" }}
                                         className="text-right"
                                       >
-                                        <ClearIcon style={{ color: 'red', float: 'right' }} />
+                                        <ClearIcon
+                                          style={{
+                                            color: "red",
+                                            float: "right",
+                                          }}
+                                        />
                                       </Button>
                                     </Col>
-
                                   </Row>
 
                                   <div className="anwser mt-3">
@@ -551,9 +536,12 @@ const Admin = () => {
                                             </Col>
                                             <Col sm={1}>
                                               <div
-                                                style={{ marginTop: '12px' }}
+                                                style={{ marginTop: "12px" }}
                                                 onClick={() =>
-                                                  deleteAnswerFil(indexp, item.Id)
+                                                  deleteAnswerFil(
+                                                    indexp,
+                                                    item.Id
+                                                  )
                                                 }
                                               >
                                                 <DeleteIcon />

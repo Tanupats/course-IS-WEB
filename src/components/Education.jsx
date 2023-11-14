@@ -77,7 +77,7 @@ const Education = () => {
     //หัวข้อใหญ่
     const getTopic = async () => {
         let topics = [];
-        await axios.get("http://localhost:3000/topics").then((res) => {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/topics`).then((res) => {
             topics = res.data.map((data) => {
                 return ({ label: data.topic, value: data.id })
             })
@@ -91,14 +91,14 @@ const Education = () => {
 
 
     const getOneEducation = async (id) => {
-        await axios.get(`http://localhost:3000/topics/getOne/${id}`).then(res => {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/topics/getOne/${id}`).then(res => {
             setGetone(res.data);
         })
     }
 
 
     const getAllEducation = async () => {
-        await axios.get(`http://localhost:3000/topics/getAll`).then(res => {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/topics/getAll`).then(res => {
             setGetone(res.data);
         })
     }
@@ -120,7 +120,7 @@ const Education = () => {
 
     const updateItem = async () => {
         const body = { topic: name }
-        await axios.put(`http://localhost:3000/topics/updateItem/${itemId}`, body)
+        await axios.put(`${import.meta.env.VITE_BASE_URL}/topics/updateItem/${itemId}`, body)
             .then(res => {
                 if (res.status === 200) {
                     Swal.fire({
@@ -139,7 +139,7 @@ const Education = () => {
     const updateGroupId = async () => {
         handleCloseGroup();
         const body = { topic: nameGroup }
-        await axios.put(`http://localhost:3000/topics/updateGroup/${GroupId}`, body)
+        await axios.put(`${import.meta.env.VITE_BASE_URL}/topics/updateGroup/${GroupId}`, body)
             .then(res => {
                 if (res.status === 200) {
                     Swal.fire({
@@ -159,7 +159,7 @@ const Education = () => {
 
     const addGroup = async () => {
         const body = { topic: nameGroup }
-        await axios.post(`http://localhost:3000/topics/addGroup`, body)
+        await axios.post(`${import.meta.env.VITE_BASE_URL}/topics/addGroup`, body)
             .then(res => {
                 if (res.status === 200) {
                     Swal.fire({
@@ -187,7 +187,7 @@ const Education = () => {
     const updateEducation = async () => {
 
         const body = { groupName: educationTopic.label ? educationTopic.label : gname, name: title }
-        await axios.put(`http://localhost:3000/education/${eId}`, body).then((res) => {
+        await axios.put(`${import.meta.env.VITE_BASE_URL}/education/${eId}`, body).then((res) => {
             if (res.status === 200) {
                 alert("แก้ไขข้อมูลสำเร็จ")
 
@@ -201,7 +201,7 @@ const Education = () => {
 
         detail.map((item) => {
             let body = { answer: item.answer };
-            axios.put(`http://localhost:3000/education/detail/${item.educationdetailId}`, body)
+            axios.put(`${import.meta.env.VITE_BASE_URL}/education/detail/${item.educationdetailId}`, body)
         })
 
         updateEducation();
@@ -222,7 +222,7 @@ const Education = () => {
             cancelButtonText: 'ยกเลิก'
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`http://localhost:3000/topics/deleteItem/${id}`)
+                axios.delete(`${import.meta.env.VITE_BASE_URL}/topics/deleteItem/${id}`)
                     .then(res => {
                         if (res.status === 200) {
                             Swal.fire({
@@ -255,8 +255,8 @@ const Education = () => {
             cancelButtonText: 'ยกเลิก'
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`http://localhost:3000/education/detail/${id}`)
-                axios.delete(`http://localhost:3000/education/${id}`)
+                axios.delete(`${import.meta.env.VITE_BASE_URL}/education/detail/${id}`)
+                axios.delete(`${import.meta.env.VITE_BASE_URL}/education/${id}`)
                     .then(res => {
                         if (res.status === 200) {
                             Swal.fire({
@@ -291,7 +291,7 @@ const Education = () => {
             cancelButtonText: 'ยกเลิก'
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.delete(`http://localhost:3000/topics/deleteGroup/${Id}`)
+                axios.delete(`${import.meta.env.VITE_BASE_URL}/topics/deleteGroup/${Id}`)
                     .then(res => {
                         if (res.status === 200) {
                             Swal.fire({
@@ -332,7 +332,7 @@ const Education = () => {
             updateItem()
         } else {
             let body = { topic: name, topicId: educationId }
-            await axios.post("http://localhost:3000/topics/addItem", body)
+            await axios.post(`${import.meta.env.VITE_BASE_URL}/topics/addItem`, body)
                 .then(res => {
                     if (res.status === 200) {
                         Swal.fire({
@@ -362,7 +362,7 @@ const Education = () => {
 
 
     const getEducations = async () => {
-        await axios.get("http://localhost:3000/education")
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/education`)
             .then((res) => {
                 setData(res.data);
             });
@@ -376,7 +376,7 @@ const Education = () => {
         setTitle(title);
         setGname(groupnam);
 
-        axios.get(`http://localhost:3000/education/educationOne/${id}`)
+        axios.get(`${import.meta.env.VITE_BASE_URL}/education/educationOne/${id}`)
             .then((res) => {
                 setDetail(res.data)
             });

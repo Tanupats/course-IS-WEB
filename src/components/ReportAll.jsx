@@ -10,7 +10,7 @@ const ReportAll = () => {
   const getData = async () => {
     await axios
       .get(
-        "http://localhost:3000/education"
+        `${import.meta.env.VITE_BASE_URL}/education`
       )
       .then((res) => {
         setData(res.data);

@@ -3,7 +3,6 @@ import { Col, Row, Container, Card, Button, Form, Modal, Alert, ButtonGroup } fr
 import axios from "axios";
 import "../index.css";
 import Swal from "sweetalert2";
-import FolderIcon from '@mui/icons-material/Folder';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PreviewFile from "./PreviewFile";
@@ -56,7 +55,7 @@ const Filedocs = () => {
   }
 
   const getData = async () => {
-    await axios.get(`http://localhost:3000/document/${docFilter}`).then((res) => {
+    await axios.get(`${import.meta.env.VITE_BASE_URL}/document/${docFilter}`).then((res) => {
       setData(res.data);
     });
   };
@@ -69,7 +68,7 @@ const Filedocs = () => {
     formData.append("photo", file);
     formData.append("detail", detail);
     await axios
-      .post("http://localhost:3000/document/upload", formData)
+      .post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData)
       .then((res) => {
         if (res.status === 200) {
           Swal.fire({
@@ -95,7 +94,7 @@ const Filedocs = () => {
 
     if (docFilter === "docs" || docFilter ==="image") {
       await axios
-        .post("http://localhost:3000/document/updatefile/" + Id, formData)
+        .post(`${import.meta.env.VITE_BASE_URL}/document/updatefile/${Id}`, formData)
         .then((res) => {
           if (res.status === 200) {
             Swal.fire({
@@ -112,7 +111,7 @@ const Filedocs = () => {
     
     if (docFilter === "poster") {
       await axios
-        .post("http://localhost:3000/poster/updatefile/" + Id, formData)
+        .post(`${import.meta.env.VITE_BASE_URL}/poster/updatefile/${Id}`, formData)
         .then((res) => {
           if (res.status === 200) {
             Swal.fire({
@@ -146,7 +145,7 @@ const Filedocs = () => {
       cancelButtonText: 'ยกเลิก'
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.post('http://localhost:3000/document/' + id, body)
+        axios.post(`${import.meta.env.VITE_BASE_URL}/document/${id}`, body)
           .then(res => {
             if (res.status === 200) {
               getData()

@@ -18,7 +18,7 @@ const MindNode = () => {
 
     const getPlos = async () => {
         let nodelist = [];
-        await axios.get("http://localhost:3000/education/getPlos").then(res => {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/education/getPlos`).then(res => {
 
             console.log(res.data)
             nodelist = res.data.map((item) => {
@@ -38,7 +38,7 @@ const MindNode = () => {
     }
     const getEage = async () => {
         let egelist = [];
-        await axios.get("http://localhost:3000/education/getDetail").then(res => {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/education/getDetail`).then(res => {
 
             egelist = res.data.map((ege) => {
                 return ({ id: `${'e' + ege.source.toString() + '-' + ege.target.toString()}`, source: ege.source.toString(), target: ege.target.toString() })
@@ -51,7 +51,7 @@ const MindNode = () => {
     const UpdatePositions = async () => {
         nodes.map((data) => {
             let body = { x: data.position.x, y: data.position.y }
-            axios.put(`http://localhost:3000/education/updatePosition/${data.id}`, body)
+            axios.put(`${import.meta.env.VITE_BASE_URL}/education/updatePosition/${data.id}`, body)
         })
        
       Swal.fire({
