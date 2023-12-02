@@ -263,7 +263,7 @@ const Filedocs = () => {
                                   <div className="icon-docs" >
 
 
-                                    <PreviewFile filePath={item.filePath} /> </div>
+                                  <PreviewFile filePath={item.filePath} /> </div>
                                   <h5 className="mt-2">  {item.name}</h5>
                                   <span> {item.detail}</span>
                                 </Col>

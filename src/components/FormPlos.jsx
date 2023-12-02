@@ -4,7 +4,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Select from "react-select";
 import DeleteIcon from '@mui/icons-material/Delete';
 const FormPlos = (props) => {
-    const { topicsData, ylos, plos, yloValue, ploValue,setFile } = props;
+    const { topicsData, ylos, plos, yloValue, ploValue } = props;
     
     return (
         <>
@@ -96,13 +96,7 @@ const FormPlos = (props) => {
                                                             + เพิ่มช่องคำตอบ
                                                         </Button>
                                                     </Col>
-                                                    <Col>
-                                                        <Form>
-                                                            <Form.Label>แนบไฟล์เพิ่มเติม</Form.Label>
-                                                            <Form.Control type="file"   
-                                                            onChange={(e)=>setFile(e.target.files[0])}/>
-                                                        </Form>
-                                                    </Col>
+                                                   
                                                 </Row>
 
 

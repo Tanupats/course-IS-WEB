@@ -37,7 +37,7 @@ const Admin = () => {
   const [ploValue, setPloValue] = useState(0);
 
   //แนบไฟล์เอกสาร
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState([]);
 
   const onSelectTopic = (event) => {
     setSelectedValue(event.value);
@@ -154,15 +154,26 @@ const Admin = () => {
     }
   };
 
-  const uploadFile = (id) => {
-    file.map((fileList) => {
-      let formData = new FormData();
-      formData.append("name", fileList.name);
-      formData.append("photo", fileList);
-      formData.append("detail", id);
-      axios.post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData);
-    });
+
+  let docPath = "";
+  const uploadFile =async () => {
+
+    let formData = new FormData();
+    formData.append("name", lerningName);
+    formData.append("photo", file[0]);
+    formData.append("detail", "PLO");
+    formData.append("group", "docs");
+  await  axios.post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData)
+      .then(res => {
+
+        if (res.status === 200) {
+          docPath = res.data.path;
+        }
+      })
+      ;
+
   };
+
 
   const addAwnser = (index) => {
     console.log(topicsData[index].anwsers);
@@ -178,15 +189,18 @@ const Admin = () => {
     setCounter(counter + 1);
   };
 
-  // บันทึกความสอดคล้อง
-  const postData = () => {
+  // บันทึกความสอดคล้องทางการศึกษา
+  const postData =async  () => {
+    if (file.length > 0) {
+      await uploadFile()
+    }
+
     let id = "";
     if (topicsData.length > 0) {
       //post toppics
       topicsData.map((item) => {
-        //upload file this
 
-        let body = { name: item.title, groupName: formName };
+        let body = { name: item.title, groupName: formName, document: docPath };
         axios
           .post(`${import.meta.env.VITE_BASE_URL}/education/add`, body)
           .then((respone) => {
@@ -201,8 +215,6 @@ const Admin = () => {
           });
       });
 
-      uploadFile(id);
-      //upload file
 
       Swal.fire({
         position: "center",
@@ -225,10 +237,15 @@ const Admin = () => {
 
 
   const postDataPlo = () => {
+    if (file.length > 0) {
+      uploadFile()
+    }
+
+
     if (lerningName === "PLOs") {
       //post plos
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list };
+        let body = { name: lerningName, answer: item.list, document: docPath };
         axios
           .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
@@ -244,12 +261,12 @@ const Admin = () => {
           });
       });
 
-      
+
       setTopicData([]);
     } else if (lerningName === "CLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list };
+        let body = { name: lerningName, answer: item.list, document: docPath };
         axios
           .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
@@ -274,11 +291,11 @@ const Admin = () => {
     } else if (lerningName === "YLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list };
+        let body = { name: lerningName, answer: item.list, document: docPath };
         axios
           .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
           .then((respone) => {
-            id = respone.data.id;
+            let id = respone.data.id;
 
             let body = { source: ploValue, target: id };
 
@@ -333,7 +350,7 @@ const Admin = () => {
   };
 
   const handelUploadFiles = (e) => {
-    setFile((item) => [...item, e.target.files[0]]);
+    setFile([e.target.files[0]]);
   };
 
   useEffect(() => {
@@ -347,7 +364,7 @@ const Admin = () => {
     console.log(topicsData);
   }, [topicsData]);
 
-  useEffect(() => {}, [counter]);
+  useEffect(() => { }, [counter]);
   useEffect(() => {
     console.log(file);
   }, [file]);
@@ -415,23 +432,36 @@ const Admin = () => {
                 </Card.Title>
 
                 {formName === "บันทึกส่วนประกอบของหลักสูตร" && (
-                  <FormPlos
-                    file={file}
-                    setFile={setFile}
-                    ylos={ylos}
-                    plos={plos}
-                    yloValue={yloValue}
-                    ploValue={ploValue}
-                    addPOLdata={addPOLdata}
-                    topicsData={topicsData}
-                    setYloValue={setYloValue}
-                    setPloValue={setPloValue}
-                    addAwnser={addAwnser}
-                    updateAwnser={updateAwnser}
-                    deleteAnswerFil={deleteAnswerFil}
-                    postDataPlo={postDataPlo}
-                  />
-                )}
+                  <>
+                    <Col sm={6} className="mb-4">
+                      <Form>
+                        <Form.Label>
+                          แนบไฟล์เพิ่มเติม
+                        </Form.Label>
+                        <Form.Control
+                          type="file"
+                          onChange={(e) => handelUploadFiles(e)}
+                        />
+                      </Form>
+                    </Col>
+                    <FormPlos
+                      file={file}
+                      setFile={setFile}
+                      ylos={ylos}
+                      plos={plos}
+                      yloValue={yloValue}
+                      ploValue={ploValue}
+                      addPOLdata={addPOLdata}
+                      topicsData={topicsData}
+                      setYloValue={setYloValue}
+                      setPloValue={setPloValue}
+                      addAwnser={addAwnser}
+                      updateAwnser={updateAwnser}
+                      deleteAnswerFil={deleteAnswerFil}
+                      postDataPlo={postDataPlo}
+                    />
+
+                  </>)}
 
                 {formName !== "บันทึกส่วนประกอบของหลักสูตร" && (
                   <Form>
@@ -466,6 +496,17 @@ const Admin = () => {
                           </Button>
                         </Form.Group>
                       </Col>
+                      <Col sm={6} className="mb-4">
+                        <Form>
+                          <Form.Label>
+                            แนบไฟล์เพิ่มเติม
+                          </Form.Label>
+                          <Form.Control
+                            type="file"
+                            onChange={(e) => handelUploadFiles(e)}
+                          />
+                        </Form>
+                      </Col>
                     </Row>
 
                     <div className="topic">
@@ -485,17 +526,7 @@ const Admin = () => {
                                         + เพิ่มฟิลด์คำตอบ
                                       </Button>
                                     </Col>
-                                    <Col sm={4}>
-                                      <Form>
-                                        <Form.Label>
-                                          แนบไฟล์เพิ่มเติม
-                                        </Form.Label>
-                                        <Form.Control
-                                          type="file"
-                                          onChange={(e) => handelUploadFiles(e)}
-                                        />
-                                      </Form>
-                                    </Col>
+
 
                                     <Col sm={4}>
                                       <Button
