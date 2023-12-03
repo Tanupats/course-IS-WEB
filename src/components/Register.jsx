@@ -13,8 +13,8 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handelSubmit = async (event) => {
-    event.preventDefault();
+  const handelSubmit = async () => {
+   
 
         let formData = new FormData();
 
@@ -63,7 +63,7 @@ const Register = () => {
                     <Form
                       className="section-form"
 
-                      onSubmit={handelSubmit}
+                    
                     >
                       <h4 className="text-center"> ลงทะเบียน</h4>
 
@@ -110,7 +110,8 @@ const Register = () => {
                     
                     
                       <Button
-                        type="submit"
+                         onClick={()=>handelSubmit()}
+                       
                         className=" w-100 mt-4">
                         ลงทะเบียน
                       </Button>

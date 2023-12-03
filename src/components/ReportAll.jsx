@@ -54,7 +54,7 @@ const ReportAll = () => {
                       
                           <h5> {data.name}</h5>
       
-                          <PreviewFile id={data.document}/>
+                          <PreviewFile path={data.document}/>
                           <EdcationDetail id={data.educationId}/>
                           <Button>Sourse</Button>
                         </Card>

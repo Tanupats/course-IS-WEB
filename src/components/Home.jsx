@@ -16,7 +16,7 @@ const Home = () => {
             <Button style={{width:'300px',marginTop:'60px'}}   onClick={()=>{ navigate('/login') }}>เข้าสู่ระบบ</Button>
             </Col>
             
-            <p>{import.meta.env.VITE_BASE_URL}</p>
+         
        
 
       </Row>

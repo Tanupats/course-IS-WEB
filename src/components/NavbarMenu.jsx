@@ -13,6 +13,8 @@ import { AuthData } from "../AuthContext";
 import Education from "./Education";
 import Filedocs from "./Filedocs"
 import Register from "./Register";
+import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/Logout';
 const NavbarMenu = () => {
 
   const { isLogin,setIsLogin } = useContext(AuthData);
@@ -61,6 +63,7 @@ const NavbarMenu = () => {
 
                 isLogin === "loginged" ? ( 
                 <>
+                <Nav.Link style={{ color: '#fff' }}> <PersonIcon /> {localStorage.getItem("name") } </Nav.Link>
                 <Nav.Link as={Link} to={"/admin"} style={{ color: '#fff' }}>
                   จัดการข้อมูลหลักสูตร
                 </Nav.Link>
@@ -70,7 +73,7 @@ const NavbarMenu = () => {
                 onClick={() => Logout()}
               >
 
-                ออกจากระบบ
+              <LogoutIcon />  ออกจากระบบ
               </Nav.Link>
               </>
                 ) : (

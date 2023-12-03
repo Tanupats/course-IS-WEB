@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { Col, Row, Container } from 'react-bootstrap';
+import { Col, Row, Container,Button } from 'react-bootstrap';
 import axios from "axios";
 import moment from "moment/moment";
+import Swal from "sweetalert2";
 const ReportPLO = () => {
   const [data, setData] = useState([])
   const getData = async () => {
@@ -12,6 +13,28 @@ const ReportPLO = () => {
         setData(res.data)
      
       })
+    
+  }
+  const deleteProgramId = async (id) => {
+
+    await axios.delete(`${import.meta.env.VITE_BASE_URL}/education/deleteProgram/${id}`)
+      .then(res => {
+          if(res.status===200){
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "ลบข้อมูลสำเร็จ",
+              showConfirmButton: true,
+              timer: 1000,
+            });
+             
+              getData()
+          }
+     
+      })
+
+    await axios.delete(`${import.meta.env.VITE_BASE_URL}/education/programDetail/${id}`)
+    
     
   }
 
@@ -39,6 +62,7 @@ const ReportPLO = () => {
                     <th>name</th>       
                     <th>ผลลัพธ์</th>
                     <th>วันที่เขียน</th>
+                    <th>จัดการ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -50,7 +74,8 @@ const ReportPLO = () => {
                           <td>{data.name}</td>
                           <td>{data.answer}</td>
                           <td>{ moment(data.Datecreated	).format('YYYY-MM-DD')   }</td>
-                      
+                          <td><Button variant="danger" onClick={()=>deleteProgramId(data.programlerningId)}> ลบ  </Button></td>
+
                         </tr>
                       )
                     })

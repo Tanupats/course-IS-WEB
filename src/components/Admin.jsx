@@ -225,6 +225,7 @@ const Admin = () => {
       });
 
       setTopicData([]);
+      setFile([])
     } else {
       Swal.fire({
         position: "center",
@@ -236,9 +237,9 @@ const Admin = () => {
   };
 
 
-  const postDataPlo = () => {
+  const postDataPlo = async () => {
     if (file.length > 0) {
-      uploadFile()
+    await   uploadFile()
     }
 
 
@@ -384,9 +385,7 @@ const Admin = () => {
                     objectFit: "cover",
                     marginBottom: "12px",
                   }}
-                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${localStorage.getItem(
-                    "profile"
-                  )}`}
+                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${localStorage.getItem("profile")}`}
                 />
 
                 <h5> {localStorage.getItem("name")} </h5>
@@ -517,18 +516,18 @@ const Admin = () => {
                               <Card>
                                 <Card.Body>
                                   <Row>
-                                    <Col sm={4}>
+                                    <Col sm={6}>
                                       <Card.Title>{data.title}</Card.Title>
                                       <Button
                                         variant="light"
                                         onClick={() => addAwnser(indexp)}
                                       >
-                                        + เพิ่มฟิลด์คำตอบ
+                                        + เพิ่มช่องคำตอบ
                                       </Button>
                                     </Col>
 
 
-                                    <Col sm={4}>
+                                    <Col sm={6}>
                                       <Button
                                         variant="light"
                                         onClick={() => deleteToppic(data.title)}
@@ -553,7 +552,7 @@ const Admin = () => {
                                             <Col sm={5} className="d-flex">
                                               <Form.Control
                                                 type="text"
-                                                placeholder="กรกอกข้อมูล"
+                                                placeholder="คำตอบ"
                                                 className="mt-2"
                                                 defaultValue={item.list}
                                                 onChange={(e) =>

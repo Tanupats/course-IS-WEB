@@ -1,12 +1,12 @@
 import React,{useEffect,useState} from "react";
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 const PreviewFile = (props) => {
-    const {filePath,id} = props;
+    const {filePath,path} = props;
     const [src,setSrc] = useState(filePath);
 
   useEffect(()=>{
-      if(id){
-          setSrc(id)
+      if(path){
+          setSrc(path)
       }
   },[])
 
