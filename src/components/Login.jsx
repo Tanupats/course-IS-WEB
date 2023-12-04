@@ -66,7 +66,7 @@ const Login = () => {
                     <center>
                       {" "}
                       <Image
-                        src="./src/assets/logo.jpg"
+                        src="logo.jpg"
                         style={{ width: "20%", height: "auto" }}
                       />
                     </center>
