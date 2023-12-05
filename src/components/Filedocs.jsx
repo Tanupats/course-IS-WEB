@@ -67,6 +67,7 @@ const Filedocs = () => {
     formData.append("name", name);
     formData.append("photo", file);
     formData.append("detail", detail);
+    formData.append("group", docFilter);
     await axios
       .post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData)
       .then((res) => {
@@ -83,6 +84,7 @@ const Filedocs = () => {
     await getData();
   };
 
+
   const UpdateFileId = async () => {
 
     let formData = new FormData();
@@ -92,7 +94,6 @@ const Filedocs = () => {
     formData.append("photo", file);
     formData.append("detail", detail);
 
-    if (docFilter === "docs" || docFilter ==="image") {
       await axios
         .post(`${import.meta.env.VITE_BASE_URL}/document/updatefile/${Id}`, formData)
         .then((res) => {
@@ -107,26 +108,8 @@ const Filedocs = () => {
           }
         });
 
-    } 
     
-    if (docFilter === "poster") {
-      await axios
-        .post(`${import.meta.env.VITE_BASE_URL}/poster/updatefile/${Id}`, formData)
-        .then((res) => {
-          if (res.status === 200) {
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "แก้ไขข้อมูลสำเร็จ",
-              showConfirmButton: true,
-            });
-
-          }
-        });
-
-    }
-
-
+    
  
     handleCloseUpdate();
   };
@@ -163,9 +146,14 @@ const Filedocs = () => {
   useEffect(() => {
     getData();
   }, []);
+
   useEffect(() => {
     getData();
   }, [docFilter]);
+
+  useEffect(() => {
+   
+  }, [data]);
 
   return (
     <>
@@ -209,8 +197,7 @@ const Filedocs = () => {
                     <Form.Label>
                       เลือกประเภทของไฟล์
                     </Form.Label>
-                    <ButtonGroup aria-label="Basic example" className="w-100">
-                      <Button onClick={() => setDocFilter("poster")} variant="secondary">POSTER</Button>
+                    <ButtonGroup aria-label="Basic example" className="w-100">                
                       <Button onClick={() => setDocFilter("docs")} variant="secondary">DOCS</Button>
                       <Button onClick={() => setDocFilter("image")} variant="secondary">IMAGE</Button>
                     </ButtonGroup>
@@ -322,7 +309,7 @@ const Filedocs = () => {
           </Modal.Header>
           <Modal.Body>
 
-            <Form onSubmit={() => UpdateFileId()}>
+            <Form>
               <Row>
                 <Col sm={4}>
                   <Form.Group>
@@ -361,11 +348,19 @@ const Filedocs = () => {
                 </Col>
 
               </Row>
-              <Button variant="success" type="submit">
+              <Row>
+                <Col>
+                
+                </Col>
+
+             
+              <Button variant="success" type="submit" onClick={()=>UpdateFileId()}>
                 บันทึก
-              </Button> <Button variant="danger" onClick={handleCloseUpdate}>
+              </Button> 
+                <Button variant="danger" onClick={handleCloseUpdate}>
                 <ClearIcon />     ยกเลิก
               </Button>
+              </Row>
             </Form>
 
 

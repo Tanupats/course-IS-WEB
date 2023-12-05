@@ -15,6 +15,7 @@ import Filedocs from "./Filedocs"
 import Register from "./Register";
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 const NavbarMenu = () => {
 
   const { isLogin,setIsLogin } = useContext(AuthData);
@@ -28,14 +29,14 @@ const NavbarMenu = () => {
     <div>
       <Router>
 
-        <Navbar collapseOnSelect expand="lg" style={{ backgroundColor: '#B57DDE' }}
+        <Navbar collapseOnSelect expand="lg"  sticky="top"  style={{ backgroundColor: '#B57DDE' }}
         >
 
           <Navbar.Brand>
             {" "}
             <Image
               src="logo.jpg"
-              style={{ width: "50px", height: "50px", borderRadius: '50%', marginLeft: '12px', objectFit: "cover" }}
+              style={{ width: "35px", height: "35px", borderRadius: '50%', marginLeft: '12px', objectFit: "cover" }}
             />{" "}
           </Navbar.Brand>
 
@@ -79,7 +80,7 @@ const NavbarMenu = () => {
                 ) : (
 
                      <Nav.Link as={Link} to={"/login"} style={{ color: '#fff' }}>
-                เข้าสู่ระบบ
+             <LoginIcon />  เข้าสู่ระบบ
               </Nav.Link>
                 )
 

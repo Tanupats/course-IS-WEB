@@ -432,7 +432,7 @@ const Admin = () => {
 
                 {formName === "บันทึกส่วนประกอบของหลักสูตร" && (
                   <>
-                    <Col sm={6} className="mb-4">
+                    <Col sm={4} className="mb-4">
                       <Form>
                         <Form.Label>
                           แนบไฟล์เพิ่มเติม
@@ -471,6 +471,7 @@ const Admin = () => {
                             เลือกหัวข้อสำหรับบันทึกข้อมูล{" "}
                           </Form.Label>
                           <Select
+                            placeholder="เลือกหัวข้อที่ต้องการบันทึก"
                             onChange={onSelectTopic}
                             options={optionToppics}
                           />
@@ -495,7 +496,7 @@ const Admin = () => {
                           </Button>
                         </Form.Group>
                       </Col>
-                      <Col sm={6} className="mb-4">
+                      <Col sm={4} className="mb-4">
                         <Form>
                           <Form.Label>
                             แนบไฟล์เพิ่มเติม

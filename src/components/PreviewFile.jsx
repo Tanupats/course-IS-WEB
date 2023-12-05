@@ -8,6 +8,7 @@ const PreviewFile = (props) => {
       if(path){
           setSrc(path)
       }
+     
   },[])
 
   return (
