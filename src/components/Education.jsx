@@ -12,6 +12,7 @@ import Select from 'react-select';
 import Swal from 'sweetalert2'
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import PreviewFile from "./PreviewFile";
 import './Admin.css';
 const Education = () => {
     const [show, setShow] = useState(false);
@@ -31,6 +32,8 @@ const Education = () => {
     const [detail, setDetail] = useState([]);
     const [gname, setGname] = useState("");
     const [eId, setEId] = useState("");
+
+    const [document,setDocument] = useState("")
 
 
     const [selectedValue, setSelectedValue] = useState("");
@@ -369,12 +372,13 @@ const Education = () => {
     };
 
 
-    const getDetail = (id, title, groupnam) => {
+    const getDetail = (id, title, groupnam,docs) => {
 
         setEId(id);
         setEducationTopic([{ label: groupnam, value: groupnam }])
         setTitle(title);
         setGname(groupnam);
+        setDocument(docs);
 
         axios.get(`${import.meta.env.VITE_BASE_URL}/education/educationOne/${id}`)
             .then((res) => {
@@ -409,10 +413,10 @@ const Education = () => {
 
     return (
         <>
-            <Container fluid>
+            <Container>
                 <Row className="mb-4">
-                    <Col sm={2}></Col>
-                    <Col sm={8}>
+                   
+                    <Col sm={12}>
                         <Row className="mt-4">
 
                             <Col sm={4}>
@@ -473,8 +477,9 @@ const Education = () => {
                                                     </TableCell>
 
                                                     <TableCell component="th" scope="row">
+                                                     
                                                         <Button
-                                                            onClick={() => getDetail(row.educationId, row.name, row.groupName)}>
+                                                            onClick={() => getDetail(row.educationId, row.name, row.groupName,row.document)}>
                                                             รายละเอียด
                                                         </Button>
                                                     </TableCell>
@@ -597,7 +602,7 @@ const Education = () => {
 
                         </TableContainer>
                     </Col>
-                    <Col sm={2}></Col>
+                   
                 </Row>
 
                 <Modal
@@ -743,7 +748,7 @@ const Education = () => {
                             <Row>
                                 <Form.Label className="mt-4">คำตอบทั้งหมด</Form.Label>
                                 {
-                                    detail.map((ans, index) => {
+                                    detail?.map((ans, index) => {
                                         return (<>
                                             <Col sm={12}
                                                 key={ans.educationdetailId}
@@ -758,7 +763,10 @@ const Education = () => {
                                         </>)
                                     })
                                 }
-
+                                <Col sm={12}>
+                                 <PreviewFile path={document} />
+                                </Col>
+                                
                             </Row>
                         </Form>
                     </Modal.Body>
@@ -768,7 +776,7 @@ const Education = () => {
                             onClick={() => updateEducationDetail()}
                         >
 
-                            บันทึกข้อมูล
+                           แก้ไขข้อมูล
                         </Button>
                         <Button
                             onClick={() => handleCloseDetail()}

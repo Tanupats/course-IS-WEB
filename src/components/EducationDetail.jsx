@@ -8,8 +8,7 @@ const EdcationDetail = (props) => {
     const getDetail = (id) => {
 
         axios
-            .get(
-                `${import.meta.env.VITE_BASE_URL}/education/educationOne/${id}`
+            .get(`${import.meta.env.VITE_BASE_URL}/education/educationOne/${id}`
             )
             .then((res) => {
                 setData(res.data)

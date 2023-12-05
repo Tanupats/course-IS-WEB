@@ -1,21 +1,13 @@
-import React,{useEffect,useState} from "react";
+import React from "react";
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 const PreviewFile = (props) => {
-    const {filePath,path} = props;
-    const [src,setSrc] = useState(filePath);
-
-  useEffect(()=>{
-      if(path){
-          setSrc(path)
-      }
-     
-  },[])
-
+    const {path} = props;
+    
   return (
     <>
       <DocViewer
         style={{height:'500px'}}
-        documents={[{ uri:`${import.meta.env.VITE_BASE_URL}/${src}`}]}
+        documents={[{ uri:`${import.meta.env.VITE_BASE_URL}/${path}`}]}
         pluginRenderers={DocViewerRenderers}
       />
     </>
