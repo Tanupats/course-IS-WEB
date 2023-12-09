@@ -54,7 +54,7 @@ const Register = () => {
                     <center>
                       {" "}
                       <Image
-                        src={ file ?  URL.createObjectURL(file) : ""  }
+                        src={ file ?  URL.createObjectURL(file) : "profile.png"  }
                         style={{ width: "100px", height: "100px",borderRadius:"50px" }}
                       />
                     </center>

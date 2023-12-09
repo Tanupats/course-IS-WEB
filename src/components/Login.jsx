@@ -28,11 +28,7 @@ const Login = () => {
         )
         .then(res => {
 
-            console.log(res.data.length)
-          if(res.data.length===0){
-            setErrorMsg("เข้าสูระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง")
-          }
-
+        
           if (res.status === 200) {
             localStorage.setItem("name", res.data[0].name);
             localStorage.setItem("userId", res.data[0].userId);
@@ -47,6 +43,9 @@ const Login = () => {
             }
 
           }
+        }).catch(err=>{
+          console.log(err)
+          setErrorMsg("ชื่อผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง")
         })
 
     }

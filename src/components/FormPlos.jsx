@@ -1,10 +1,12 @@
 import React from "react";
-import { Row, Col, Card, Form, Button } from "react-bootstrap";
+import { Row, Col, Card, Form, Button,Alert } from "react-bootstrap";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Select from "react-select";
 import DeleteIcon from '@mui/icons-material/Delete';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 const FormPlos = (props) => {
-    const { topicsData, ylos, plos, yloValue, ploValue } = props;
+    const { topicsData, ylos, plos } = props;
     
     return (
         <>
@@ -65,7 +67,7 @@ const FormPlos = (props) => {
                                                 {data.title === "CLOs" && (
                                                     <Form.Group className="mt-4">
                                                         <Form.Label>
-                                                            เลือก YLOs {yloValue}
+                                                            เลือก YLOs 
                                                         </Form.Label>
                                                         <Select
                                                             options={ylos}
@@ -77,7 +79,7 @@ const FormPlos = (props) => {
                                                 {data.title === "YLOs" && (
                                                     <Form.Group className="mt-4">
                                                         <Form.Label>
-                                                            เลือก PLOs {ploValue}
+                                                            เลือก PLOs 
                                                         </Form.Label>
                                                         <Select
                                                             options={plos}
@@ -155,16 +157,28 @@ const FormPlos = (props) => {
                 })}
 
                 <Row className="mt-4 ">
-                    <Col sm={4}>
+
+                    <Col sm={12} >  {
+                                topicsData.length === 0 && (
+                                    <Alert>
+                                 บันทึกข้อมูลเรียบร้อย
+                            </Alert>
+                                )
+                        
+                    }
+                            
+                    </Col>
+                    <Col sm={6}>
                         <Button
+                         
                             variant="success w-50"
                             onClick={() => props.postDataPlo()}
                         >
-                            บันทึกข้อมูล
+                         <SaveIcon />   บันทึกข้อมูล
                         </Button>
                     </Col>
-                    <Col sm={4}>
-                        <Button variant="danger w-50">ยกเลิก</Button>
+                    <Col sm={6}>
+                 <Button    style={{float:'right'}} variant="danger w-50"> <CancelIcon />  ยกเลิก</Button>
                     </Col>
                 </Row>
             </Form>

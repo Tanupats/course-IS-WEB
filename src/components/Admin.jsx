@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Nav } from "react-bootstrap";
-import { Container, Row, Col, Card, Form, Image } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Image,Alert } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -10,7 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FormPlos from "./FormPlos";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 const Admin = () => {
   const navigate = useNavigate();
   if (localStorage.getItem("name") === "") {
@@ -58,7 +59,7 @@ const Admin = () => {
 
   const addTopicData = () => {
     const checkTitle = topicsData.filter((obj) => obj.title === topicName);
-    console.log("check", checkTitle);
+   
 
     //ยังไม่ได้เลือกหัวข้อ
     if (topicName === "") {
@@ -115,7 +116,7 @@ const Admin = () => {
     if (topicsData[gindex].anwsers.length > 1) {
       let result = topicsData[gindex].anwsers.filter((obj) => obj.Id !== id);
       topicsData[gindex].anwsers = result;
-      console.log(result);
+      
       setCounter(counter + 1);
     } else {
       Swal.fire({
@@ -176,7 +177,7 @@ const Admin = () => {
 
 
   const addAwnser = (index) => {
-    console.log(topicsData[index].anwsers);
+   
     let newID = Math.floor(Math.random() * 100);
 
     topicsData[index].anwsers.push({ list: "", Id: newID });
@@ -185,7 +186,6 @@ const Admin = () => {
 
   const updateAwnser = (index, anser, value) => {
     topicsData[index].anwsers[anser].list = value;
-    console.log(topicsData[index].anwsers);
     setCounter(counter + 1);
   };
 
@@ -361,15 +361,9 @@ const Admin = () => {
     getYLOs();
   }, []);
 
-  useEffect(() => {
-    console.log(topicsData);
-  }, [topicsData]);
 
   useEffect(() => { }, [counter]);
-  useEffect(() => {
-    console.log(file);
-  }, [file]);
-
+ 
   return (
     <>
       <Container fluid>
@@ -586,16 +580,31 @@ const Admin = () => {
                         );
                       })}
                     </div>
-                    <Row>
-                      <Col sm={6}>
-                        <Button variant="success" onClick={() => postData()}>
-                          บันทึกข้อมูล
+                    <Row className="mt-4 ">
+
+                    <Col sm={12} >  {
+                                topicsData.length === 0 && (
+                                    <Alert className="text-center">
+                                 กรุณาเลือกหัวข้อที่จะบันทึก หากบันทึกเรียบร้อยแล้วไปที่เมนู สรุปความสอดคล้อง
+                            </Alert>
+                                )
+                        
+                    }
+                            
+                    </Col>
+                    <Col sm={6}>
+                        <Button
+                         
+                            variant="success w-50"
+                            onClick={() =>postData()}
+                        >
+                         <SaveIcon />   บันทึกข้อมูล
                         </Button>
-                      </Col>
-                      <Col sm={6}>
-                        <Button variant="danger">ยกเลิก</Button>
-                      </Col>
-                    </Row>
+                    </Col>
+                    <Col sm={6}>
+                 <Button    style={{float:'right'}} variant="danger w-50"> <CancelIcon />  ยกเลิก</Button>
+                    </Col>
+                </Row>
                   </Form>
                 )}
               </Card.Body>
