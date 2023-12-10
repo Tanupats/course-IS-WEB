@@ -15,7 +15,7 @@ const Home = () => {
               </div>
       {
 
-        localStorage.getItem("name") === "" && (
+        localStorage.getItem("name") === "" ||   localStorage.getItem("name") === null && (
            <Button style={{width:'300px',marginTop:'60px'}}   onClick={()=>{ navigate('/login') }}>เข้าสู่ระบบ</Button>
         )
       }

@@ -1,44 +1,45 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Col, Row, Form, Button, Image, Card,Alert } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Col, Row, Form, Button, Image, Card, Alert } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Register = () => {
-  
   const navigae = useNavigate();
 
   const [file, setFile] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const handelSubmit = async (e) => {
+    e.preventDefault();
+    let formData = new FormData();
 
-  const handelSubmit = async () => {
-   
+    formData.append("photo", file);
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("systemName", "course");
+    formData.append("role", "admin");
 
-        let formData = new FormData();
-
-        formData.append("photo", file);
-        formData.append("name", name);
-        formData.append("email", email);
-        formData.append("password", password);
-        formData.append("systemName", "course");
-        formData.append("role", "admin");
-
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/register`,formData)
-        .then(res => {
-
-          if (res.status === 200) {         
-             navigae("/login");      
-          }
-        })
-
-    
+    await axios
+      .post(`${import.meta.env.VITE_BASE_URL}/register`, formData)
+      .then((res) => {
+        if (res.status === 200) {
+          navigae("/login");
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setMessage("ผู้ใช้นี้ได้ลงทะเบียนแล้ว");
+        }
+      });
   };
 
-  useEffect(()=>{
-        console.log(file)
-  },[file])
+  useEffect(() => {
+    console.log(file);
+  }, [file]);
 
   return (
     <div>
@@ -54,16 +55,20 @@ const Register = () => {
                     <center>
                       {" "}
                       <Image
-                        src={ file ?  URL.createObjectURL(file) : "profile.png"  }
-                        style={{ width: "100px", height: "100px",borderRadius:"50px" }}
+                        src={file ? URL.createObjectURL(file) : "profile.png"}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          borderRadius: "50px",
+                        }}
                       />
                     </center>
                   </Col>
                   <Col sm={12}>
                     <Form
                       className="section-form"
-
-                    
+                      onSubmit={(e) => handelSubmit(e)}
+                      enctype="multipart/form-data"
                     >
                       <h4 className="text-center"> ลงทะเบียน</h4>
 
@@ -71,7 +76,6 @@ const Register = () => {
                         <Form.Label>อัพโหลดโปรไฟล์</Form.Label>
                         <Form.Control
                           type="file"
-                                       
                           onChange={(e) => setFile(e.target.files[0])}
                         />
                       </Form.Group>
@@ -106,13 +110,11 @@ const Register = () => {
                           onChange={(e) => setPassword(e.target.value)}
                         />
                       </Form.Group>
-
-                    
-                    
-                      <Button
-                         onClick={()=>handelSubmit()}
-                       
-                        className=" w-100 mt-4">
+                      <br />
+                      {message ? <Alert variant="danger" className="text-center"> {message} </Alert> : <></>}
+                      <br />
+                      <a href="/login">หากมีบัญชีอยู่แล้ว คลิกเข้าสู่ระบบ</a>
+                      <Button type="submit" className=" w-100 mt-4">
                         ลงทะเบียน
                       </Button>
                     </Form>

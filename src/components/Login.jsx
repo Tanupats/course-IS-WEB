@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext,useState } from "react";
 import { Col, Row, Form, Button, Image, Card,Alert } from "react-bootstrap";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
@@ -44,8 +44,10 @@ const Login = () => {
 
           }
         }).catch(err=>{
-          console.log(err)
-          setErrorMsg("ชื่อผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง")
+          if(err){
+              setErrorMsg("ชื่อผู้ใช้ หรือรหัสผ่านไม่ถูกต้อง")
+          }
+        
         })
 
     }
@@ -115,7 +117,7 @@ const Login = () => {
                         เข้าสู่ระบบ
                       </Button>
                       <hr />
-                          ยังไม่มีบัญชี คลิกลงทะเบียน
+                          <p>*หากยังไม่มีบัญชี คลิกลงทะเบียน</p> 
                       <Button
                         onClick={()=>navigae('/register')}
                         type="submit"
