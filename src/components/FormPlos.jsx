@@ -141,7 +141,7 @@ const FormPlos = (props) => {
                                                                         props.deleteAnswerFil(indexp, item.Id)
                                                                     }
                                                                 >
-                                                                    <DeleteIcon style={{ color: '#333333' }} />
+                                                                    <DeleteIcon style={{color:'red'}} />
                                                                 </div>
                                                             </Col>
                                                         </>

@@ -50,7 +50,7 @@ const ReportAll = () => {
                           </Row>
                         </Card.Title>
 
-                        <h5> {data.name}</h5>
+                         <h5 className="mt-2">เรื่อง :  {data.name}</h5>
 
                         <EdcationDetail id={data.educationId} />
                         {data.document !== "" && (

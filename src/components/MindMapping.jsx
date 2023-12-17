@@ -6,7 +6,7 @@ const MindMapping = () => {
 
     return (
         <>
-                <h5 className="text-center mt-4">แผนผังความคิดสรุป PLOs </h5>
+                <h5 className="text-center mt-4">แผนผังความคิด (MindMap) </h5>
                 <MindNode />
          
 

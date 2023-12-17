@@ -94,9 +94,9 @@ const ReportPLO = () => {
       <Container>
         <Row>
           <center>
-            <Col sm={8} className="text-center" style={{ marginTop: "30px" }}>
+            <Col sm={8} className="text-center" style={{ marginTop: "50px" }}>
               <div className="text-center mt-4 mb-4">
-                <h5>ข้อมูลส่วนประกอบของหลักสูตร</h5>
+                <h5>สรุปข้อมูลส่วนประกอบของหลักสูตร</h5>
               </div>
               <Table bordered hover variant="white">
                 <thead>
@@ -116,6 +116,7 @@ const ReportPLO = () => {
                         <td>{moment(data.Datecreated).format("YYYY-MM-DD")}</td>
                         <td>
                           <Button
+                          style={{color:'#fff'}}
                             variant="warning"
                             onClick={() =>
                               handleShow(data.programlerningId, data.answer)

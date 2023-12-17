@@ -88,10 +88,14 @@ const MindNode = () => {
   return (
     <Fragment>
       <Row>
-        <Col>
-          <Button onClick={() => UpdatePositions()} variant="warning">
+        <Col sm={12}>
+          <Button 
+          
+           onClick={() => 
+           UpdatePositions()} 
+           variant="warning">
             {" "}
-            <SchemaIcon /> แก้ไขตำแหน่ง{" "}
+            <SchemaIcon  style={{color:'#fff'}} /> แก้ไขตำแหน่ง{" "}
           </Button>
         </Col>
       </Row>

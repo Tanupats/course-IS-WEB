@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Nav } from "react-bootstrap";
-import { Container, Row, Col, Card, Form, Image,Alert } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Image, Alert } from "react-bootstrap";
 import "./Admin.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -10,8 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FormPlos from "./FormPlos";
 import ClearIcon from "@mui/icons-material/Clear";
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
 const Admin = () => {
   const navigate = useNavigate();
   if (localStorage.getItem("name") === "") {
@@ -59,7 +59,6 @@ const Admin = () => {
 
   const addTopicData = () => {
     const checkTitle = topicsData.filter((obj) => obj.title === topicName);
-   
 
     //ยังไม่ได้เลือกหัวข้อ
     if (topicName === "") {
@@ -87,7 +86,13 @@ const Admin = () => {
 
       if (topicsData.length > 0) {
         if (checkTitle.length) {
-          alert("ได้เลือกหัวข้อนี้ไปแล้ว กรุณาเลือกใหม่อีกครั้ง");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title:
+              "ได้เลือกหัวข้อนี้ไปแล้ว กรุณาพิม์หัวข้อใหม่ หรือเลือกใหม่อีกครั้ง",
+            showConfirmButton: true,
+          });
         } else {
           setTopicData([
             ...topicsData,
@@ -116,7 +121,7 @@ const Admin = () => {
     if (topicsData[gindex].anwsers.length > 1) {
       let result = topicsData[gindex].anwsers.filter((obj) => obj.Id !== id);
       topicsData[gindex].anwsers = result;
-      
+
       setCounter(counter + 1);
     } else {
       Swal.fire({
@@ -155,29 +160,23 @@ const Admin = () => {
     }
   };
 
-
   let docPath = "";
-  const uploadFile =async () => {
-
+  const uploadFile = async () => {
     let formData = new FormData();
     formData.append("name", lerningName);
     formData.append("photo", file[0]);
     formData.append("detail", "PLO");
     formData.append("group", "docs");
-  await  axios.post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData)
-      .then(res => {
-
+    await axios
+      .post(`${import.meta.env.VITE_BASE_URL}/document/upload`, formData)
+      .then((res) => {
         if (res.status === 200) {
           docPath = res.data.path;
         }
-      })
-      ;
-
+      });
   };
 
-
   const addAwnser = (index) => {
-   
     let newID = Math.floor(Math.random() * 100);
 
     topicsData[index].anwsers.push({ list: "", Id: newID });
@@ -190,16 +189,15 @@ const Admin = () => {
   };
 
   // บันทึกความสอดคล้องทางการศึกษา
-  const postData =async  () => {
+  const postData = async () => {
     if (file.length > 0) {
-      await uploadFile()
+      await uploadFile();
     }
 
     let id = "";
     if (topicsData.length > 0) {
       //post toppics
       topicsData.map((item) => {
-
         let body = { name: item.title, groupName: formName, document: docPath };
         axios
           .post(`${import.meta.env.VITE_BASE_URL}/education/add`, body)
@@ -209,12 +207,17 @@ const Admin = () => {
 
             //detail
             item.anwsers.map((data) => {
-              let body = { answer: data.list, educationId: id };
-              axios.post(`${import.meta.env.VITE_BASE_URL}/education/detail`, body);
+              if (data.list !== "") {
+                let body = { answer: data.list, educationId: id };
+
+                axios.post(
+                  `${import.meta.env.VITE_BASE_URL}/education/detail`,
+                  body
+                );
+              }
             });
           });
       });
-
 
       Swal.fire({
         position: "center",
@@ -225,7 +228,7 @@ const Admin = () => {
       });
 
       setTopicData([]);
-      setFile([])
+      setFile([]);
     } else {
       Swal.fire({
         position: "center",
@@ -236,48 +239,61 @@ const Admin = () => {
     }
   };
 
-
   const postDataPlo = async () => {
     if (file.length > 0) {
-    await   uploadFile()
+      await uploadFile();
     }
-
 
     if (lerningName === "PLOs") {
       //post plos
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list, document: docPath };
-        axios
-          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
-          .then((respone) => {
-            if (respone.status === 200) {
-              Swal.fire({
-                position: "center",
-                icon: "success",
-                title: "บันทึกข้อมูล PLOs สำเร็จ",
-                showConfirmButton: true,
-                timer: 1500,
-              });
-            }
-          });
-      });
+        if (item.list !== "") {
+          let body = {
+            name: lerningName,
+            answer: item.list,
+            document: docPath,
+          };
 
+          axios
+            .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
+            .then((respone) => {
+              if (respone.status === 200) {
+                Swal.fire({
+                  position: "center",
+                  icon: "success",
+                  title: "บันทึกข้อมูล PLOs สำเร็จ",
+                  showConfirmButton: true,
+                  timer: 1500,
+                });
+              }
+            });
+        }
+      });
 
       setTopicData([]);
     } else if (lerningName === "CLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list, document: docPath };
-        axios
-          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
-          .then((respone) => {
-            let id = respone.data.id;
+        if (item.list !== "") {
+          let body = {
+            name: lerningName,
+            answer: item.list,
+            document: docPath,
+          };
+          axios
+            .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
+            .then((respone) => {
+              let id = respone.data.id;
 
-            let body = { source: yloValue, target: id };
+              let body = { source: yloValue, target: id };
 
-            //for connect node Ylo to clo
-            axios.post(`${import.meta.env.VITE_BASE_URL}/education/addDetail`, body);
-          });
+              //for connect node Ylo to clo
+              axios.post(
+                `${import.meta.env.VITE_BASE_URL}/education/addDetail`,
+                body
+              );
+            });
+        }
       });
 
       Swal.fire({
@@ -292,17 +308,26 @@ const Admin = () => {
     } else if (lerningName === "YLOs") {
       //post toppics
       topicsData[0].anwsers.map((item) => {
-        let body = { name: lerningName, answer: item.list, document: docPath };
-        axios
-          .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
-          .then((respone) => {
-            let id = respone.data.id;
+        if (item.list !== "") {
+          let body = {
+            name: lerningName,
+            answer: item.list,
+            document: docPath,
+          };
+          axios
+            .post(`${import.meta.env.VITE_BASE_URL}/education/addProgram`, body)
+            .then((respone) => {
+              let id = respone.data.id;
 
-            let body = { source: ploValue, target: id };
+              let body = { source: ploValue, target: id };
 
-            //for connect node Ylo to plo
-            axios.post(`${import.meta.env.VITE_BASE_URL}/education/addDetail`, body);
-          });
+              //for connect node Ylo to plo
+              axios.post(
+                `${import.meta.env.VITE_BASE_URL}/education/addDetail`,
+                body
+              );
+            });
+        }
       });
 
       Swal.fire({
@@ -361,9 +386,8 @@ const Admin = () => {
     getYLOs();
   }, []);
 
+  useEffect(() => {}, [counter]);
 
-  useEffect(() => { }, [counter]);
- 
   return (
     <>
       <Container fluid>
@@ -379,7 +403,9 @@ const Admin = () => {
                     objectFit: "cover",
                     marginBottom: "12px",
                   }}
-                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${localStorage.getItem("profile")}`}
+                  src={`${
+                    import.meta.env.VITE_BASE_URL
+                  }/uploads/${localStorage.getItem("profile")}`}
                 />
 
                 <h5> {localStorage.getItem("name")} </h5>
@@ -409,7 +435,6 @@ const Admin = () => {
                   จัดการข้อมูลความสอดคล้อง
                 </Nav.Link>
               </Nav.Item>
-             
             </Nav>
           </Col>
 
@@ -424,9 +449,7 @@ const Admin = () => {
                   <>
                     <Col sm={4} className="mb-4">
                       <Form>
-                        <Form.Label>
-                          แนบไฟล์เพิ่มเติม
-                        </Form.Label>
+                        <Form.Label>แนบไฟล์เพิ่มเติม</Form.Label>
                         <Form.Control
                           type="file"
                           onChange={(e) => handelUploadFiles(e)}
@@ -449,8 +472,8 @@ const Admin = () => {
                       deleteAnswerFil={deleteAnswerFil}
                       postDataPlo={postDataPlo}
                     />
-
-                  </>)}
+                  </>
+                )}
 
                 {formName !== "บันทึกส่วนประกอบของหลักสูตร" && (
                   <Form>
@@ -488,9 +511,7 @@ const Admin = () => {
                       </Col>
                       <Col sm={4} className="mb-4">
                         <Form>
-                          <Form.Label>
-                            แนบไฟล์เพิ่มเติม
-                          </Form.Label>
+                          <Form.Label>แนบไฟล์เพิ่มเติม</Form.Label>
                           <Form.Control
                             type="file"
                             onChange={(e) => handelUploadFiles(e)}
@@ -510,13 +531,12 @@ const Admin = () => {
                                     <Col sm={6}>
                                       <Card.Title>{data.title}</Card.Title>
                                       <Button
-                                        variant="light"
+                                        variant="outline-primary"
                                         onClick={() => addAwnser(indexp)}
                                       >
                                         + เพิ่มช่องคำตอบ
                                       </Button>
                                     </Col>
-
 
                                     <Col sm={6}>
                                       <Button
@@ -542,6 +562,7 @@ const Admin = () => {
                                           <>
                                             <Col sm={5} className="d-flex">
                                               <Form.Control
+                                                required
                                                 type="text"
                                                 placeholder="คำตอบ"
                                                 className="mt-2"
@@ -565,7 +586,7 @@ const Admin = () => {
                                                   )
                                                 }
                                               >
-                                                <DeleteIcon />
+                                                <DeleteIcon style={{color:'red'}}  />
                                               </div>
                                             </Col>
                                           </>
@@ -581,30 +602,33 @@ const Admin = () => {
                       })}
                     </div>
                     <Row className="mt-4 ">
-
-                    <Col sm={12} >  {
-                                topicsData.length === 0 && (
-                                    <Alert className="text-center">
-                                 กรุณาเลือกหัวข้อที่จะบันทึก หากบันทึกเรียบร้อยแล้วไปที่เมนู สรุปความสอดคล้อง
-                            </Alert>
-                                )
-                        
-                    }
-                            
-                    </Col>
-                    <Col sm={6}>
+                      <Col sm={12}>
+                        {" "}
+                        {topicsData.length === 0 && (
+                          <Alert className="text-center">
+                            กรุณาเลือกหัวข้อที่จะบันทึก
+                            หากบันทึกเรียบร้อยแล้วไปที่เมนู สรุปความสอดคล้อง
+                          </Alert>
+                        )}
+                      </Col>
+                      <Col sm={6}>
                         <Button
-                         
-                            variant="success w-50"
-                            onClick={() =>postData()}
+                          variant="success w-50"
+                          onClick={() => postData()}
                         >
-                         <SaveIcon />   บันทึกข้อมูล
+                          <SaveIcon /> บันทึกข้อมูล
                         </Button>
-                    </Col>
-                    <Col sm={6}>
-                 <Button    style={{float:'right'}} variant="danger w-50"> <CancelIcon />  ยกเลิก</Button>
-                    </Col>
-                </Row>
+                      </Col>
+                      <Col sm={6}>
+                        <Button
+                          style={{ float: "right" }}
+                          variant="danger w-50"
+                        >
+                          {" "}
+                          <CancelIcon /> ยกเลิก
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 )}
               </Card.Body>
