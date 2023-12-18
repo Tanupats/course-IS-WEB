@@ -380,12 +380,15 @@ const Admin = () => {
   };
 
   useEffect(() => {
-    getSubtopics(1);
+    getSubtopics(15);
     getTopics();
     getPLOs();
     getYLOs();
   }, []);
 
+  useEffect(()=>{
+      console.log('top',optionToppics)
+  },[optionToppics])
   useEffect(() => {}, [counter]);
 
   return (
