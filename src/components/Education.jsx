@@ -26,6 +26,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DatasetIcon from '@mui/icons-material/Dataset';
+import TocIcon from '@mui/icons-material/Toc';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import "./Admin.css";
 
 const Education = () => {
@@ -471,25 +474,28 @@ const Education = () => {
               <Col sm={12}>
                 <Form.Group>
                   <Button
+                  style={{height:'50px',fontSize:'18px'}}
                     variant="primary"
                     onClick={() => onSelectTable("ข้อมูลที่บันทึกความสอดคล้อง")}
                     className="mt-4"
                   >
-                    ข้อมูลความสอดคล้องทั้งหมด
+                <DatasetIcon />   ข้อมูลความสอดคล้องทั้งหมด
                   </Button>{" "}
                   <Button
+                    style={{height:'50px',fontSize:'18px'}}
                     variant="primary"
                     onClick={() => onSelectTable("ข้อมูลความสอดคล้อง")}
                     className="mt-4"
                   >
-                    หัวข้อความสอดคล้อง
+                <ViewModuleIcon />   หัวข้อความสอดคล้อง
                   </Button>{" "}
                   <Button
+                    style={{height:'50px',fontSize:'18px'}}
                     variant="primary"
                     onClick={() => onSelectTable("ข้อมูลกลุ่มความสอดคล้อง")}
                     className="mt-4"
                   >
-                    กลุ่มความสอดคล้อง
+                <TocIcon />  กลุ่มความสอดคล้อง
                   </Button>{" "}
                 </Form.Group>
               </Col>
@@ -558,7 +564,7 @@ const Education = () => {
               )}
               {selectTable === "ข้อมูลความสอดคล้อง" && (
                 <>
-                  <Row>
+                  <Row className="p-2">
                     <Col sm={4}>
                       <Form.Group>
                         <Form.Label>เลือกกลุ่มสำหรับแสดงข้อมูล </Form.Label>
@@ -626,9 +632,11 @@ const Education = () => {
 
               {selectTable === "ข้อมูลกลุ่มความสอดคล้อง" && (
                 <>
-                  <Row>
+                  <Row className="p-2">
                     <Col sm={4}>
-                      <Button onClick={() => setShowGroup(true)}>
+                      <Button 
+                      variant="success"
+                      onClick={() => setShowGroup(true)}>
                         <AddCircleOutlineIcon /> เพิ่มกลุ่มข้อมูลความสอดคล้อง
                       </Button>
                     </Col>
